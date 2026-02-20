@@ -241,9 +241,9 @@ We observe that cross-correlation performs poorly in aligning the waveforms on t
   <em>Figure 5: Effect of physics-based alignment using orbit geometry.</em>
 </p>
 
-By contrast, the physics-based alignment (of the normalised waveforms in this case) produces a meaningful improvement for both surface classes.
+By contrast, the physics-based alignment (of the normalised waveforms in this case) produces a meaningful improvement for both surface classes, alowing recovery of a peak closer to the true shape of an individual echo:
 
-*   Peak height: The lead mean peak height increases from 0.31 to 0.77, demonstrating that averaging the peaks without alignment had resulted in flattening of the peak due to differing bin positions of the peak along the x-axis. Alignment appears to allow recovery of a peak closer to the true shape of an individual echo (as observed in the first plot below). The sea ice peak also increases, from 0.47 to 0.74. As sea-ice waveforms are natively broader, the peak is less sensitive to small bin shifts; however, it is evident that the lack of alignment still caused suppression of the peak
+*   Peak height: The lead mean peak height increases from 0.31 to 0.77, demonstrating that averaging the peaks without alignment had resulted in flattening of the peak due to differing bin positions of the peak along the x-axis. The sea ice peak also increases, from 0.47 to 0.74. As sea-ice waveforms are natively broader, the peak is less sensitive to small bin shifts; however, it is evident that the lack of alignment was still causing suppression of the peak.
 *   Standard deviation: The lead mean standard deviation decreases from 0.026 to 0.018, demonstrating that a significant proportion of the spread in the unaligned calculation was due to instrumental rather than physical variability. The sea-ice mean standard deviation also decreases, but less sharply, suggesting that the instrumental variation contributed less to the standard deviation than in the case of leads.
 
 This allows us to obtain a view of the distribution of leads and sea-ice caused solely by physical - rather than instrumental - variation.
