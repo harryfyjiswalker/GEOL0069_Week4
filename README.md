@@ -63,9 +63,7 @@ Beyond their role in altimetry processing, leads are geophysically important in 
 
 ### 2.2 SAR Radar Altimeter
 
-Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to detect surface features. Unlike optical satellite data, the approach is unaffected by cloud cover or months of darkness, making it invaluable for day- and year-round monitoring. 
-
-A key application of this approach is in SAR altimetry - inferring surface elevation from the time taken from emission of the pulse and detection of the returning signal (called a "waveform" or "echo"). This allows much higher resolution measurements compared to earlier methods, which is essential for detection of leads, which may only be tens to hundreds of metres wide:
+Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to detect surface features. Unlike optical satellite data, the approach is unaffected by cloud cover or months of darkness, making it invaluable for day- and year-round monitoring. A key application of this approach is in SAR altimetry - inferring surface elevation from the time taken from emission of the pulse and detection of the returning signal (called a "waveform" or "echo"). This allows much higher resolution measurements compared to earlier methods, which is essential for detection of leads, which may only be tens to hundreds of metres wide:
 - Conventional altimeters transmit a single broad radar pulse that illuminates a large patch of surface - roughly 20km wide - simultaneously. The return signal is therefore an average over that entire area, which is problematic in contexts such as sea ice where the surface changes character over much shorter distances.
 - SAR altimeters address this by recording many pulses in quick succession as the satellite moves along its orbit, then combining them (using coherent multi-look processing using Doppler techniques) to isolate the return from a much smaller strip of ground - around 300m - directly beneath the satellite.[2]
 
