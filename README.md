@@ -172,6 +172,8 @@ plt.show()
 
 ## Data & Preprocessing
 
+To transform the data into meaningful information for the classification model, Pulse Peakiness and Stack Standard Deviation are extracted from the raw Sentinel-3 data.
+
 **Satellite data:** Sentinel-3B SRAL Level-2 SAR product:
 ```
 S3B_SR_2_LAN_SI_20190301T231304_20190301T233006_20230405T162425_1021_022_301______LN3_R_NT_005.SEN3
@@ -184,25 +186,13 @@ S3B_SR_2_LAN_SI_20190301T231304_20190301T233006_20230405T162425_1021_022_301____
 | **Pulse Peakiness (PP)** | Ratio of peak power to mean power across the waveform. Leads produce very high peakiness (sharp specular returns); sea ice produces low peakiness (diffuse returns). |
 | **Stack Standard Deviation (SSD)** | Spread of power across look angles in the Delay-Doppler stack. Leads produce a narrow angular response (low SSD); sea ice produces a broad response (high SSD). |
 
-The ESA official surface-type flag (`surf_class_20_ku`) is used as ground truth: flag = 1 for sea ice, flag = 2 for leads. All observations with other flag values or NaN features are excluded, leaving **12,195 valid waveforms** for analysis.
+The ESA official surface-type flag (`surf_class_20_ku`) is used as ground truth: flag = 1 for sea ice, flag = 2 for leads. All observations with other flag values or NaN features are excluded, leaving 12,195 valid waveforms for analysis.
 
 ---
-
-## Methods
-
-### Feature Space
-
-Both features are normalised before clustering. A 2D scatter plot of the feature space (see Figure 1) reveals two well-separated populations, confirming physical separability — the primary justification for an unsupervised approach over simple thresholding [5].
-
----
-
-### 1. K-Means Clustering
-
-Its main limitation here is the assumption of **spherical, equal-variance clusters**, which the feature-space scatter (Figure 1) shows to be a poor fit — the lead cluster is more compact than the sea-ice cluster.
 
 ### 2. Gaussian Mixture Models (GMM)
 
-Unlike K-Means, GMM allows each cluster to have a **different covariance structure** and outputs a *soft* classification (probability of class membership), which is better suited here because the two clusters have visibly different spreads in feature space. Dettmering et al. (2018) [5] demonstrated that unsupervised methods applied to CryoSat-2 stack statistics consistently outperform threshold-based approaches, achieving overall accuracies above 97%.
+Two-component GMM is selected over K-means for clustering here given its previous success in this task (Dettmering et al, 2018), with random state set to zero to allow for reproducibility.[5] The model is fitted to the cleaned waveforms and the predicted ratio of leads to sea-ice checked for physical plausibility, with significantly more sea ice expected.[3]
 
 **Cluster counts from GMM:**
 
@@ -210,8 +200,6 @@ Unlike K-Means, GMM allows each cluster to have a **different covariance structu
 |---------|-------|----------------|
 | 0 | 8,880 | Sea Ice |
 | 1 | 3,315 | Lead |
-
-The ratio of ~2.7 sea-ice waveforms per lead is physically plausible for a winter Arctic overpass, where leads constitute a small but climatically influential fraction of ice-covered area [3].
 
 ---
 
