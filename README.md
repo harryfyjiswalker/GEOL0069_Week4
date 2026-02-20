@@ -63,27 +63,18 @@ Beyond their role in altimetry processing, leads are geophysically important in 
 
 ### 2.2 SAR Radar Altimeter
 
-Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to detect surface features. Unlike optical satellite data, the approach is unaffected by cloud cover or months of darkness, making it invaluable for day- and year-round monitoring. A key application of this approach is in SAR altimetry - inferring surface elevation from the time taken from emission of the pulse and detection of the returning signal (called a "waveform" or "echo"). This allows much higher resolution measurements compared to earlier methods, which is essential for detection of leads, which may only be tens to hundreds of metres wide:
+Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to detect surface features. Unlike optical satellite data, the approach is unaffected by cloud cover or months of darkness, making it invaluable for day- and year-round monitoring. A key application of this approach is in SAR altimetry (e.g. via the Sentinel-3 SAR Radar Altimeter (SRAL) - which involves inferring surface elevation from the time taken from emission of the pulse and detection of the returning signal (called a "waveform" or "echo"). This allows much higher resolution measurements compared to conventional methods, which is essential for detection of leads, which may only be tens to hundreds of metres wide:
 - Conventional altimeters transmit a single broad radar pulse that illuminates a large patch of surface - roughly 20km wide - simultaneously. The return signal is therefore an average over that entire area, which is problematic in contexts such as sea ice where the surface changes character over much shorter distances.
 - SAR altimeters address this by recording many pulses in quick succession as the satellite moves along its orbit, then combining them (using coherent multi-look processing using Doppler techniques) to isolate the return from a much smaller strip of ground - around 300m - directly beneath the satellite.[2]
 
+[Insert image with labels]
+
 The returned waveform encodes information about both:
-- 
+- Surface elevation, from the timing of the waveform's *leading edge* (the point where the returned signal strength first rises sharply i.e. the moment the pulse reaches the surface).       - This is measured with *Pulse Peakiness* (the ratio of peak power to mean power i.e. how sharply peaked the return is - high for leads, low for sea ice)
+- Surface texture, from the shape of the waveform (a smooth surface e.g. a lead reflects the pulse back cleanly, producing a sharp, intense return; a rough surface e.g. sea ice scatters the pulse in many directions so the energy arrives back at the satellite over a longer time period, producing a weaker, broader return)
+   - This is measured with *Stack Standard Deviation* (how spread out the return is across different viewing angles as the satellite passes overhead - low for leads, high for sea ice)
 
-
-Crucially, the shape of the returned waveform encodes information about the reflecting surface beyond just its height. A specular surface — such as the calm open water of a lead — returns a narrow, high-amplitude pulse, while the rough, heterogeneous surface of sea ice produces a broader, lower-amplitude return with a slower trailing edge. It is this physical difference in waveform shape that the classification methods in this assignment exploit, using pulse peakiness and stack standard deviation as discriminating features.
-
-Altimetry - the precise measurement of 
-
-
-SAR altimetry, obtained via specialised instruments such as the SAR Radar Altimeter (SRAL) on board Sentinel-3
-
-
-The data generally falls into two categories: SAR imaging, which provides a 2D map of the surface backscatter, and 
-
-- Pulse peakiness
-
-Elevation can be analysed via the return time of the microwave pulses, while surface discrimination is possible through analysis of the waveform shape.  The **Sentinel-3 satellites** (ESA/Copernicus) carry the SAR Radar Altimeter (SRAL), which transmits Ku-band (13.575 GHz) radar pulses toward the Earth's surface and records the backscattered power as a function of time — the *echo waveform* [1]. The mission was designed to measure sea-surface topography, sea-ice thickness, and land-ice elevation on a global operational basis [2].
+An unsupervised learning algorithm can exploit these differences in the waveform shape to distinguish between sea ice and leads.
 
 ### 2.3 Clustering algorithms
 
