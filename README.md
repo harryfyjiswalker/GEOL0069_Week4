@@ -2,7 +2,6 @@
 ### GEOL0069 – Artificial Intelligence for Earth Observation | Week 4 Assignment
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1zC4AWfp0Af7_LH2F_ZHQNeYrFT6Oe19A)
-[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 
 ---
 
@@ -201,20 +200,19 @@ Two-component GMM is selected over K-means for clustering here given its previou
 
 ---
 
-## Results & Analysis
+## Discussion and Results
 
-### Feature Space Visualisation
+### Feature Space Analysis
 
-We first analyse the feature space to evaluate the model's success in separating the two classes, plotting $\sigma_0$ (dB), the backscatter coefficient (a measure of how strongly the surface reflects the radar pulse back towards the satellite) against both PP and SSD, as well as PP against SSD to asses how well the two clusters separate in the classification feature space itself.[9] We observe strong separation following intuitive patterns: the sea-ice cluster cluster occupies the low-peakiness, weak-backscatter, high-SSD regions, reflecting the more diffuse, multi-angular return expected from a rough ice surface compared to the smooth leads.
-
-
+We first analyse the feature space to evaluate the model's success in separating the two classes, plotting $\sigma_0$ (dB), the backscatter coefficient (a measure of how strongly the surface reflects the radar pulse back towards the satellite) against both PP and SSD, as well as PP against SSD to asses how well the two clusters separate in the classification feature space itself.[9] We observe strong separation following intuitive patterns: the sea-ice cluster cluster occupies the low-peakiness, weak-backscatter, high-SSD regions, reflecting the more diffuse, multi-angular return expected from a rough ice surface compared to the smooth leads. The selongated, non-spherical cluster shapes validate the choice of GMM over K-means.
 
 
+<p align="center">
+  <img src="/images/ClusteringFeatureSpace.png" width="50%" alt="Sentinel 3 SRAL Diagram">
+</p>
 
 
 
-
-The selongated, non-spherical cluster shapes further justify the choice of GMM.
 
 
 
