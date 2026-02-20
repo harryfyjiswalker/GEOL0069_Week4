@@ -67,7 +67,8 @@ Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to d
 - Conventional altimeters transmit a single broad radar pulse that illuminates a large patch of surface - roughly 20km wide - simultaneously. The return signal is therefore an average over that entire area, which is problematic in contexts such as sea ice where the surface changes character over much shorter distances.
 - SAR altimeters address this by recording many pulses in quick succession as the satellite moves along its orbit, then combining them (using coherent multi-look processing using Doppler techniques) to isolate the return from a much smaller strip of ground - around 300m - directly beneath the satellite.[2]
 
-[Insert image with labels]
+![Alt text](/images/Sentinel_3_SRAL_Diagram.png)
+*Figure 1. Diagram of SRAL nadir track (the ground track directly beneath the satellite), as well as the ground tracks of the other Sentinel-3 instruments.*
 
 The returned waveform encodes information about both:
 - Surface elevation, from the timing of the waveform's *leading edge* (the point where the returned signal strength first rises sharply i.e. the moment the pulse reaches the surface).       - This is measured with *Pulse Peakiness* (the ratio of peak power to mean power i.e. how sharply peaked the return is - high for leads, low for sea ice)
