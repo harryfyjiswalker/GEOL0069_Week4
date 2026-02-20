@@ -67,7 +67,7 @@ Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to d
 - Conventional altimeters transmit a single broad radar pulse that illuminates a large patch of surface - roughly 20km wide - simultaneously. The return signal is therefore an average over that entire area, which is problematic in contexts such as sea ice where the surface changes character over much shorter distances.
 - SAR altimeters address this by recording many pulses in quick succession as the satellite moves along its orbit, then combining them (using coherent multi-look processing using Doppler techniques) to isolate the return from a much smaller strip of ground - around 300m - directly beneath the satellite.[2]
 
-![Alt text](/images/Sentinel_3_SRAL_Diagram.png)
+<img src="/images/Sentinel_3_SRAL_Diagram.png" width="400" alt="Sentinel 3 SRAL Diagram">
 *Figure 1. Diagram of SRAL nadir track (the ground track directly beneath the satellite), as well as the ground tracks of the other Sentinel-3 instruments.*
 
 The returned waveform encodes information about both:
@@ -84,7 +84,7 @@ Unsupervised learning is used to elucidate underlying patterns in data without t
 #### 2.3.1 K-means
 K-Means partitions the feature space into *k* clusters by iteratively assigning each point to its nearest centroid and recomputing centroids until convergence [6].
 
-**Why K-Means?** It requires no prior knowledge of cluster shape and scales efficiently to large datasets, making it a natural baseline. Its main limitation here is the assumption of **spherical, equal-variance clusters**, which the feature-space scatter (Figure 1) shows to be a poor fit — the lead cluster is more compact than the sea-ice cluster.
+**Why K-Means?** It requires no prior knowledge of cluster shape and scales efficiently to large datasets, making it a natural baseline. Its main limitation here is the assumption of **spherical, equal-variance clusters**
 
 ```python
 from sklearn.cluster import KMeans
@@ -144,11 +144,11 @@ Both features are normalised before clustering. A 2D scatter plot of the feature
 
 ### 1. K-Means Clustering
 
-
+Its main limitation here is the assumption of **spherical, equal-variance clusters**, which the feature-space scatter (Figure 1) shows to be a poor fit — the lead cluster is more compact than the sea-ice cluster.
 
 ### 2. Gaussian Mixture Models (GMM)
 
-
+Unlike K-Means, GMM allows each cluster to have a **different covariance structure** and outputs a *soft* classification (probability of class membership), which is better suited here because the two clusters have visibly different spreads in feature space. Dettmering et al. (2018) [5] demonstrated that unsupervised methods applied to CryoSat-2 stack statistics consistently outperform threshold-based approaches, achieving overall accuracies above 97%.
 
 **Cluster counts from GMM:**
 
