@@ -203,7 +203,7 @@ Two-component GMM is selected over K-means for clustering here given its previou
 ### 4.1 Feature Space Analysis
 
 <p align="center">
-  <img src="/images/ClusteringFeatureSpace1.png" width="100%" alt="Sentinel 3 SRAL Diagram">
+  <img src="/images/ClusteringFeatureSpace1.png" width="70%" alt="Sentinel 3 SRAL Diagram">
   <br>
   <em>Figure 2: Clustering feature spaces for the Gaussian Mixture Model.</em>
 </p>
@@ -217,7 +217,7 @@ We first analyse the feature space (Figure 2) to evaluate the model's success in
 We then analyse the mean and standard deviation of the different wave form classes, an initial visualisation of which is shown in Figure 3. 
 
 <p align="center">
-  <img src="/images/UnalignedMeanSd.png" width="80%" alt="Sentinel 3 SRAL Diagram">
+  <img src="/images/UnalignedMeanSd.png" width="60%" alt="Sentinel 3 SRAL Diagram">
   <br>
   <em>Figure 3: Mean and standard deviation of unaligned sea-ice and lead waveforms.</em>
 </p>
@@ -230,7 +230,7 @@ It is noted, however, that when many waveforms are recorded along a satellite tr
 The results of alignment using cross-correlation and orbit geometry are displayed in Figure 4 and 5, respectively.
 
 <p align="center">
-  <img src="/images/CrossCorrelationAlignment.png" width="100%" alt="Sentinel 3 SRAL Diagram">
+  <img src="/images/CrossCorrelationAlignment.png" width="70%" alt="Sentinel 3 SRAL Diagram">
   <br>
   <em>Figure 4: Effect of waveform alignment using cross-correlation.</em>
 </p>
@@ -239,7 +239,7 @@ The results of alignment using cross-correlation and orbit geometry are displaye
 We observe that cross-correlation performs poorly in aligning the waveforms on this data. As cross-correlation works by finding the shift that maximises the similarity between two signals, it works well when waveforms are of similar shape. It is possible that the significant noise present in sea-ice and lead waveforms lead to the lack of a dominant feature for cross-correlation to use, instead basing shifts on the noise.
 
 <p align="center">
-  <img src="/images/PhysicsBasedAlignment.png" width="80%" alt="Sentinel 3 SRAL Diagram">
+  <img src="/images/PhysicsBasedAlignment.png" width="70%" alt="Sentinel 3 SRAL Diagram">
   <br>
   <em>Figure 5: Effect of physics-based alignment using orbit geometry.</em>
 </p>
