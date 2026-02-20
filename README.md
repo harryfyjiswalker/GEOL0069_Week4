@@ -78,7 +78,7 @@ An unsupervised learning algorithm can exploit these differences in the waveform
 
 ### 2.3 Clustering algorithms
 
-Unsupervised learning is used to elucidate underlying patterns in data without the need for labelled training data. There are two main types: clustering (grouping data points based on similarity) and dimensionality reduction (compressing data to lower the dimension space). The principles behind two of the main clustering approaches, K-means and Gaussian Mixture Models (GMMs), is briefly outlined below. I provide more detail on the mathematical formulation of the techniques in [this](Clustering_Algorithms_Summary__K_means_and_Gaussian_Mixture_Models.pdf) set of notes.
+Unsupervised learning is used to elucidate underlying patterns in data without the need for labelled training data. There are two main types: clustering (grouping data points based on similarity) and dimensionality reduction (compressing data to lower the dimension space). The principles behind two of the main clustering approaches, K-means and Gaussian Mixture Models (GMMs), is briefly outlined below. I provide more detail on the mathematical formulation of the techniques in [this](/Clustering_Algorithms_Summary__K_means_and_Gaussian_Mixture_Models.pdf) set of notes.
 
 #### 2.3.1 K-means
 
