@@ -270,7 +270,7 @@ Finally, we validate our predictions against ESA official flag data. As the data
 <p align="center">
   <img src="/images/ConfusionMatrix.png" width="50%" alt="Sentinel 3 SRAL Diagram">
   <br>
-  <em>Figure 7: onfusion matrix comparing GMM cluster labels against ESA official L2 surface-type flags for all 12,195 classified waveforms. Rows = ESA ground truth; columns = GMM prediction..</em>
+  <em>Figure 7: Confusion matrix comparing GMM cluster labels against ESA official L2 surface-type flags for all 12,195 classified waveforms. Rows = ESA ground truth; columns = GMM prediction..</em>
 </p>
 
 *Table 3. Classification Report*
