@@ -44,6 +44,7 @@ The notebook ... builds directly on `Chapter1_Unsupervised_Learning_Methods_Mich
 - Quantitative evaluation against ESA official L2 surface-type flags using a confusion matrix and classification report
 
 The GMM-based classifier achieves $\sim$99.6\% overall accuracy, demonstrating that a two component mixture model applied to just two features is sufficient to cleanly separate these surface types.
+
 ---
 
 ## Background & Scientific Context
