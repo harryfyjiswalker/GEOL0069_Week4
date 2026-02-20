@@ -128,7 +128,9 @@ centers = kmeans.cluster_centers_
 plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
 plt.show()
 ```
-
+<p align="center">
+  <img src="/images/KMeansIllustration.png" width="50%" alt="Sentinel 3 SRAL Diagram">
+</p>
 ---
 
 #### 2.3.2 Gaussian Mixture Models
@@ -162,6 +164,9 @@ plt.title('Gaussian Mixture Model')
 plt.show()
 
 ```
+<p align="center">
+  <img src="/images/GMMIllustration.png" width="50%" alt="Sentinel 3 SRAL Diagram">
+</p>
 ---
 
 ## 3. Methods
