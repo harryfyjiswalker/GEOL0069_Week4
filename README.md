@@ -206,7 +206,7 @@ Two-component GMM is selected over K-means for clustering here, to provide robus
   <em>Figure 2: Clustering feature spaces for the Gaussian Mixture Model.</em>
 </p>
 
-We first analyse the feature space (Figure 2) to evaluate the model's success in separating the two classes, plotting $\sigma_0$ (dB), the backscatter coefficient (a measure of how strongly the surface reflects the radar pulse back towards the satellite) against both PP and SSD, as well as PP against SSD to assess how well the two clusters separate in the classification feature space itself.[2] We observe strong separation following intuitive patterns: the sea-ice cluster cluster occupies the low-peakiness, weak-backscatter, high-SSD regions, reflecting the more diffuse, multi-angular return expected from a rough ice surface compared to the smooth leads. The elongated, non-spherical cluster shapes validate the choice of GMM over K-means.
+We first analyse the feature space (Figure 2) to evaluate the model's success in separating the two classes, plotting $\sigma_0$ (dB), the backscatter coefficient (a measure of how strongly the surface reflects the radar pulse back towards the satellite) against both PP and SSD, as well as PP against SSD to assess how well the two clusters separate in the classification feature space itself. We observe strong separation following intuitive patterns: the sea-ice cluster cluster occupies the low-peakiness, weak-backscatter, high-SSD regions, reflecting the more diffuse, multi-angular return expected from a rough ice surface compared to the smooth leads. The elongated, non-spherical cluster shapes validate the choice of GMM over K-means.[5][6]
 
 ### 4.2 Echo Waveform Analysis
 
