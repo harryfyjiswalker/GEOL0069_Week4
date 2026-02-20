@@ -85,7 +85,23 @@ An unsupervised learning algorithm can exploit these differences in the waveform
 Unsupervised learning is used to elucidate underlying patterns in data without the need for labelled training data. There are two main types: clustering (grouping data points based on similarity) and dimensionality reduction (compressing data to lower the dimension space). The principles behind two of the main clustering approaches, K-means and Gaussian Mixture Models (GMMs), is briefly outlined below. I provide more detail on the mathematical formulation of the techniques in [this](/Clustering_Algorithms_Summary__K_means_and_Gaussian_Mixture_Models.pdf) set of notes.
 
 #### 2.3.1 K-means
-K-Means partitions the feature space into *k* clusters by iteratively assigning each point to its nearest centroid and recomputing centroids until convergence [6].
+K-Means partitions the feature space into *k* clusters by iteratively assigning each point to its nearest centroid and recomputing the position of the centroids until there is minimal or no further movement (convergence).[6] It is a centroid-based clustering algorithm (i.e. that groups data around central points) that works by minimising the Within-Cluster Sum of Squares (WCCS), also known as distortion:
+
+$$J(c, \mu) = \sum_{i=1}^{n} \sum_{j=1}^{k} \mathbb{1}\{c_i = j\} \|x_i - \mu_j\|^2$$
+
+**Where:**
+* $\mathbb{1}\{c_i = j\}$ is an **indicator function** (1 if point $i$ is assigned to cluster $j$, 0 otherwise).
+* $\|x_i - \mu_j\|^2$ is the **squared $L_2$ norm** (Euclidean distance).
+
+The objective function $J$ depends on two sets of variables: the discrete assignments $c$ and the continuous centroids $\mu$. Since we cannot optimize both simultaneously, we use an **alternating optimization** approach:
+
+1.  **Assignment Step:** Fix $\mu$ and minimize $J$ with respect to $c$ (assign each point to its nearest centroid).
+2.  **Update Step:** Fix $c$ and minimize $J$ with respect to $\mu$ (move each centroid to the mean of its assigned points).
+
+This process repeats until the assignments no longer change or a maximum number of iterations is reached.
+
+Advantages:
+- 
 
 **Why K-Means?** It requires no prior knowledge of cluster shape and scales efficiently to large datasets, making it a natural baseline. Its main limitation here is the assumption of **spherical, equal-variance clusters**
 
