@@ -63,7 +63,26 @@ Beyond their role in altimetry processing, leads are geophysically important in 
 
 ### 2.2 SAR Radar Altimeter
 
-Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to detect surface features. Unlike optical satellite data, the approach is unaffected by cloud cover or months of darkness, making it invaluable for day- and year-round monitoring. SAR altimetry, obtained via specialised instruments such as the SAR Radar Altimeter (SRAL) on board Sentinel-3
+Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to detect surface features. Unlike optical satellite data, the approach is unaffected by cloud cover or months of darkness, making it invaluable for day- and year-round monitoring. 
+
+A key application of this approach is in SAR altimetry - inferring surface elevation from the time taken from emission of the pulse and detection of the returning signal (called a "waveform" or "echo"). Conventional altimeters transmit a single broad radar pulse that illuminates a large patch of surface - roughly 20km wide - simultaneously. The return signal is therefore an average over that entire area, which is problematic in contexts such as sea ice where the surface changes character over much shorter distances. SAR altimeters address this by recording many pulses in quick succession as the satellite moves along its orbit, then combining them (using coherent multi-look processing using Doppler techniques) to isolate the return from a much smaller strip of ground - around 300m - directly beneath the satellite.[2] 
+
+The returned waveform 
+
+
+
+
+
+This produces a sharper, more localised measurement which can then resolve individual leads, which may be only tens to hundreds of metres wide.
+
+
+
+Crucially, the shape of the returned waveform encodes information about the reflecting surface beyond just its height. A specular surface — such as the calm open water of a lead — returns a narrow, high-amplitude pulse, while the rough, heterogeneous surface of sea ice produces a broader, lower-amplitude return with a slower trailing edge. It is this physical difference in waveform shape that the classification methods in this assignment exploit, using pulse peakiness and stack standard deviation as discriminating features.
+
+Altimetry - the precise measurement of 
+
+
+SAR altimetry, obtained via specialised instruments such as the SAR Radar Altimeter (SRAL) on board Sentinel-3
 
 
 The data generally falls into two categories: SAR imaging, which provides a 2D map of the surface backscatter, and 
