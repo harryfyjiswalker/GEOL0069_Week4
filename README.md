@@ -82,6 +82,8 @@ Elevation can be analysed via the return time of the microwave pulses, while sur
 
 ---
 
+## 3. Methods
+
 ## Data & Preprocessing
 
 **Satellite data:** Sentinel-3B SRAL Level-2 SAR product:
