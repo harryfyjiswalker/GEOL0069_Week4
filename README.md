@@ -81,11 +81,36 @@ An unsupervised learning algorithm can exploit these differences in the waveform
 Unsupervised learning is used to elucidate underlying patterns in data without the need for labelled training data. There are two main types: clustering (grouping data points based on similarity) and dimensionality reduction (compressing data to lower the dimension space). The principles behind two of the main clustering approaches, K-means and Gaussian Mixture Models (GMMs), is briefly outlined below. I provide more detail on the mathematical formulation of the techniques in [this](/Clustering_Algorithms_Summary__K_means_and_Gaussian_Mixture_Models.pdf) set of notes.
 
 #### 2.3.1 K-means
+K-Means partitions the feature space into *k* clusters by iteratively assigning each point to its nearest centroid and recomputing centroids until convergence [6].
 
+**Why K-Means?** It requires no prior knowledge of cluster shape and scales efficiently to large datasets, making it a natural baseline. Its main limitation here is the assumption of **spherical, equal-variance clusters**, which the feature-space scatter (Figure 1) shows to be a poor fit — the lead cluster is more compact than the sea-ice cluster.
+
+```python
+from sklearn.cluster import KMeans
+
+kmeans = KMeans(n_clusters=2, random_state=0, n_init=10)
+kmeans.fit(data_cleaned)
+clusters_kmeans = kmeans.predict(data_cleaned)
+```
+
+---
 
 #### 2.3.2 Gaussian Mixture Models
 
+A GMM models the data as a weighted sum of *K* multivariate Gaussian distributions, each with its own mean **μ** and covariance **Σ** [7]. Parameters are estimated via the **Expectation-Maximisation (EM)** algorithm:
 
+- **E-step:** compute the posterior probability that each waveform belongs to each component.
+- **M-step:** update **μ**, **Σ**, and mixing weights to maximise the data log-likelihood.
+
+Unlike K-Means, GMM allows each cluster to have a **different covariance structure** and outputs a *soft* classification (probability of class membership), which is better suited here because the two clusters have visibly different spreads in feature space. Dettmering et al. (2018) [5] demonstrated that unsupervised methods applied to CryoSat-2 stack statistics consistently outperform threshold-based approaches, achieving overall accuracies above 97%.
+
+```python
+from sklearn.mixture import GaussianMixture
+
+gmm = GaussianMixture(n_components=2, random_state=0)
+gmm.fit(data_cleaned)
+clusters_gmm = gmm.predict(data_cleaned)
+```
 ---
 
 ## 3. Methods
@@ -118,36 +143,11 @@ Both features are normalised before clustering. A 2D scatter plot of the feature
 
 ### 1. K-Means Clustering
 
-K-Means partitions the feature space into *k* clusters by iteratively assigning each point to its nearest centroid and recomputing centroids until convergence [6].
 
-**Why K-Means?** It requires no prior knowledge of cluster shape and scales efficiently to large datasets, making it a natural baseline. Its main limitation here is the assumption of **spherical, equal-variance clusters**, which the feature-space scatter (Figure 1) shows to be a poor fit — the lead cluster is more compact than the sea-ice cluster.
-
-```python
-from sklearn.cluster import KMeans
-
-kmeans = KMeans(n_clusters=2, random_state=0, n_init=10)
-kmeans.fit(data_cleaned)
-clusters_kmeans = kmeans.predict(data_cleaned)
-```
-
----
 
 ### 2. Gaussian Mixture Models (GMM)
 
-A GMM models the data as a weighted sum of *K* multivariate Gaussian distributions, each with its own mean **μ** and covariance **Σ** [7]. Parameters are estimated via the **Expectation-Maximisation (EM)** algorithm:
 
-- **E-step:** compute the posterior probability that each waveform belongs to each component.
-- **M-step:** update **μ**, **Σ**, and mixing weights to maximise the data log-likelihood.
-
-Unlike K-Means, GMM allows each cluster to have a **different covariance structure** and outputs a *soft* classification (probability of class membership), which is better suited here because the two clusters have visibly different spreads in feature space. Dettmering et al. (2018) [5] demonstrated that unsupervised methods applied to CryoSat-2 stack statistics consistently outperform threshold-based approaches, achieving overall accuracies above 97%.
-
-```python
-from sklearn.mixture import GaussianMixture
-
-gmm = GaussianMixture(n_components=2, random_state=0)
-gmm.fit(data_cleaned)
-clusters_gmm = gmm.predict(data_cleaned)
-```
 
 **Cluster counts from GMM:**
 
