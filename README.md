@@ -35,7 +35,7 @@
 
 ## Project Overview
 
-SAR data are essential for year-round polar monitoring as, unlike optical satellite data, they are unaffected by cloud cover or months of darkness. Elevation can be analysed via the return time of the microwave pulses, while surface discrimination is possible through analysis of the waveform shape. This coursework focuses on automated methods for discrimination of sea-ice and leads (narrow channels of open water within sea ice), approached via application of two unsupervised clustering algorithms - K-means and Gaussian Mixture Models (GMMs) - to waveform-derived features derived from Sentinel-3 SAR altimetry data.
+This coursework focuses on automated methods for discrimination of sea-ice and leads (narrow channels of open water within sea ice), approached via application of two unsupervised clustering algorithms - K-means and Gaussian Mixture Models (GMMs) - to waveform-derived features derived from Sentinel-3 SAR altimetry data.
 
 The notebook ... builds directly on `Chapter1_Unsupervised_Learning_Methods_Michel.ipynb` and extends it with:
 - Mean echo shapes and standard deviation envelopes for each class
@@ -45,12 +45,13 @@ The notebook ... builds directly on `Chapter1_Unsupervised_Learning_Methods_Mich
 
 The GMM-based classifier achieves an overall accuracy of approximately 99.6%, demonstrating that a two component mixture model applied to just two features is sufficient to cleanly separate these surface types.
 
-
 ---
 
-## Background & Scientific Context
+## Background
 
-The **Sentinel-3 satellites** (ESA/Copernicus) carry the SAR Radar Altimeter (SRAL), which transmits Ku-band (13.575 GHz) radar pulses toward the Earth's surface and records the backscattered power as a function of time — the **echo waveform** [1]. The mission was designed to measure sea-surface topography, sea-ice thickness, and land-ice elevation on a global operational basis [2].
+###SAR Radar Altimeter
+
+SAR data are essential for year-round polar monitoring as, unlike optical satellite data, they are unaffected by cloud cover or months of darkness. Elevation can be analysed via the return time of the microwave pulses, while surface discrimination is possible through analysis of the waveform shape.  The **Sentinel-3 satellites** (ESA/Copernicus) carry the SAR Radar Altimeter (SRAL), which transmits Ku-band (13.575 GHz) radar pulses toward the Earth's surface and records the backscattered power as a function of time — the *echo waveform* [1]. The mission was designed to measure sea-surface topography, sea-ice thickness, and land-ice elevation on a global operational basis [2].
 
 Over the polar oceans, distinguishing **sea ice** from **leads** is a critical preprocessing step before any freeboard or sea-ice thickness retrieval. The ESA operational product itself uses waveform peakiness thresholds to perform this classification [1].
 
