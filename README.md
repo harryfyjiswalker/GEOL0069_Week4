@@ -169,7 +169,7 @@ plt.show()
 
 ## 3. Methods
 
-## Data & Preprocessing
+## 3.1 Data & Preprocessing
 
 To transform the data into meaningful information for the classification model, Pulse Peakiness and Stack Standard Deviation are extracted from raw Sentinel-3 data:
 ```
@@ -187,7 +187,7 @@ The ESA official surface-type flag (`surf_class_20_ku`) is used as ground truth:
 
 ---
 
-### 2. Gaussian Mixture Models (GMM)
+### 3.2 Gaussian Mixture Models (GMM)
 
 Two-component GMM is selected over K-means for clustering here given its previous success in this task (Dettmering et al, 2018), with random state set to zero to allow for reproducibility.[5] The model is fitted to the cleaned waveforms and the predicted ratio of leads to sea-ice checked for physical plausibility, with significantly more sea ice expected.[3]
 
@@ -200,9 +200,9 @@ Two-component GMM is selected over K-means for clustering here given its previou
 
 ---
 
-## 5 Discussion and Results
+## 4 Discussion and Results
 
-### 5.1 Feature Space Analysis
+### 4.1 Feature Space Analysis
 
 <p align="center">
   <img src="/images/ClusteringFeatureSpace1.png" width="100%" alt="Sentinel 3 SRAL Diagram">
@@ -212,37 +212,38 @@ Two-component GMM is selected over K-means for clustering here given its previou
 
 We first analyse the feature space (Figure 2) to evaluate the model's success in separating the two classes, plotting $\sigma_0$ (dB), the backscatter coefficient (a measure of how strongly the surface reflects the radar pulse back towards the satellite) against both PP and SSD, as well as PP against SSD to asses how well the two clusters separate in the classification feature space itself.[9] We observe strong separation following intuitive patterns: the sea-ice cluster cluster occupies the low-peakiness, weak-backscatter, high-SSD regions, reflecting the more diffuse, multi-angular return expected from a rough ice surface compared to the smooth leads. The selongated, non-spherical cluster shapes validate the choice of GMM over K-means.
 
-### 5.2 Echo Waveform Analysis
+### 4.2 Echo Waveform Analysis
 
-#### 5.2.1 Waveform Alignment
+#### 4.2.1 Waveform Alignment
 
 We then analyse the mean and standard deviation of the different wave form classes, an initial visualisation of which is shown in Figure 3. 
 
 <p align="center">
-  <img src="/images/ClusteringFeatureSpace1.png" width="100%" alt="Sentinel 3 SRAL Diagram">
+  <img src="/images/UnalignedMeanSd.png" width="80%" alt="Sentinel 3 SRAL Diagram">
   <br>
-  <em>Figure 2: Clustering feature spaces for the Gaussian Mixture Model.</em>
+  <em>Figure 3: Mean and standard deviation of unaligned sea-ice and lead waveforms.</em>
 </p>
 
 It is noted, however, that when many waveforms are recorded along a satellite track, each one is centred slightly differently within the 256-bin window. As such, for fairer comparison, initial alignment of the waveforms is required. For this, two methods are investigated:
+
 - *Cross-correlation:* Each waveform is aligned to the first waveform in the cluster using cross-correlation (which finds the shift that maximises the similarity between two signals)[10]
 - *Physics-based alignment:* Alignment using the known orbit geometry, developed at the Alfred Wegner Institute [11]
 
 The results of alignment using cross-correlation and orbit geometry are displayed in Figure 4 and 5, respectively.
 
 <p align="center">
-  <img src="/images/ClusteringFeatureSpace1.png" width="100%" alt="Sentinel 3 SRAL Diagram">
+  <img src="/images/CrossCorrelationAlignment.png" width="100%" alt="Sentinel 3 SRAL Diagram">
   <br>
-  <em>Figure 2: Clustering feature spaces for the Gaussian Mixture Model.</em>
+  <em>Figure 4: Effect of waveform alignment using cross-correlation.</em>
 </p>
 
 
 We observe that cross-correlation performs poorly in aligning the waveforms on this data. As cross-correlation works by finding the shift that maximises the similarity between two signals, it works well when waveforms are of similar shape. It is possible that the significant noise present in sea-ice and lead waveforms lead to the lack of a dominant feature for cross-correlation to use, instead basing shifts on the noise.
 
 <p align="center">
-  <img src="/images/ClusteringFeatureSpace1.png" width="100%" alt="Sentinel 3 SRAL Diagram">
+  <img src="/images/PhysicsBasedAlignment.png" width="80%" alt="Sentinel 3 SRAL Diagram">
   <br>
-  <em>Figure 2: Clustering feature spaces for the Gaussian Mixture Model.</em>
+  <em>Figure 5: Effect of physics-based alignment using orbit geometry.</em>
 </p>
 
 
@@ -255,7 +256,7 @@ This allows us to obtain a view of the distribution of leads and sea-ice caused 
 
 Table 1
 
-#### 5.2.2 Waveform Shape
+#### 4.2.2 Waveform Shape
 
 **Analysis:** Individual waveforms confirm the aggregate statistics. Sea-ice echoes display a gently rising leading edge, a moderate peak, and a long gradual trailing edge — reflecting scattering contributions from multiple surface facets across the large altimeter footprint. Lead echoes show a steep, narrow spike followed by an abrupt decay, the hallmark of near-specular reflection from a smooth water surface. This morphological contrast is the physical basis for all waveform-based lead classifiers in the literature [3][4][5][8] and is clearly reproduced by the GMM clustering without any supervised input.
 
@@ -268,7 +269,7 @@ Table 1
 **Figure 2a (top).** Representative individual sea-ice echo waveforms (cluster 0).  
 **Figure 2b (bottom).** Representative individual lead echo waveforms (cluster 1).
 
-### 5.3 Results
+### 4.3 Results
 ---
 
 ### Mean Echo Shapes & Standard Deviation Envelopes
