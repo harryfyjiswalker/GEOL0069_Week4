@@ -72,11 +72,17 @@ Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to d
 *Figure 1. Diagram of SRAL nadir track (the ground track directly beneath the satellite), as well as the ground tracks of the other Sentinel-3 instruments. Source: https://sentiwiki.copernicus.eu/web/s3-mission*
 
 The returned waveform encodes information about both:
-- Surface elevation, from the timing of the waveform's *leading edge* (the point where the returned signal strength first rises sharply i.e. the moment the pulse reaches the surface).       - This is measured with *Pulse Peakiness* (the ratio of peak power to mean power i.e. how sharply peaked the return is - high for leads, low for sea ice)
+- Surface elevation, from the timing of the waveform's *leading edge* (the point where the returned signal strength first rises sharply i.e. the moment the pulse reaches the surface). 
 - Surface texture, from the shape of the waveform (a smooth surface e.g. a lead reflects the pulse back cleanly, producing a sharp, intense return; a rough surface e.g. sea ice scatters the pulse in many directions so the energy arrives back at the satellite over a longer time period, producing a weaker, broader return)
-   - This is measured with *Stack Standard Deviation* (how spread out the return is across different viewing angles as the satellite passes overhead - low for leads, high for sea ice)
 
-An unsupervised learning algorithm can exploit these differences in the waveform shape to distinguish between sea ice and leads.
+Such information can be extracted via two key features:
+
+| Feature | Physical Meaning |
+|---|---|
+| **Pulse Peakiness (PP)** | Ratio of peak power to mean power across the waveform. Leads produce very high peakiness (sharp specular returns); sea ice produces low peakiness (diffuse returns). |
+| **Stack Standard Deviation (SSD)** | Spread of power across different viewing angles as the satellite passes overhead. Leads produce a narrow angular response (low SSD); sea ice produces a broad response (high SSD). |
+
+An unsupervised learning algorithm can exploit differences in these features to distinguish between sea ice and leads.
 
 ### 2.3 Clustering algorithms
 
@@ -175,14 +181,6 @@ To transform the data into meaningful information for the classification model, 
 ```
 S3B_SR_2_LAN_SI_20190301T231304_20190301T233006_20230405T162425_1021_022_301______LN3_R_NT_005.SEN3
 ```
-
-**Features extracted from the 20 Hz waveforms:**
-
-| Feature | Physical Meaning |
-|---|---|
-| **Pulse Peakiness (PP)** | Ratio of peak power to mean power across the waveform. Leads produce very high peakiness (sharp specular returns); sea ice produces low peakiness (diffuse returns). |
-| **Stack Standard Deviation (SSD)** | Spread of power across look angles in the Delay-Doppler stack. Leads produce a narrow angular response (low SSD); sea ice produces a broad response (high SSD). |
-
 The ESA official surface-type flag (`surf_class_20_ku`) is used as ground truth: flag = 1 for sea ice, flag = 2 for leads. All observations with other flag values or NaN features are excluded, leaving 12,195 valid waveforms for analysis.
 
 ---
