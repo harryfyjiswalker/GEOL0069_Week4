@@ -249,7 +249,7 @@ By contrast, the physics-based alignment (of the normalised waveforms in this ca
 *   Peak height: The lead mean peak height increases from 0.31 to 0.77, demonstrating that averaging the peaks without alignment had resulted in flattening of the peak due to differing bin positions of the peak along the x-axis. Alignment appears to allow recovery of a peak closer to the true shape of an individual echo (as observed in the first plot below). The sea ice peak also increases, from 0.47 to 0.74. As sea-ice waveforms are natively broader, the peak is less sensitive to small bin shifts; however, it is evident that the lack of alignment still caused suppresion of the peak
 *   Standard deviation: The lead mean standard deviation decreases from 0.026 to 0.018, demonstrating that a significant proprtion of the spread in the unaligned calculation was due to instrumental rather than physical variability. The sea-ice mean standard deviation also decreases, but less sharply, suggesting that the instrumental variation contributed less to the standard deviation than in the case of leads.
 
-This allows us to obtain a view of the distribution of leads and sea-ice caused solely by physical, rather than instrumental, variation.
+This allows us to obtain a view of the distribution of leads and sea-ice caused solely by physical - rather than instrumental - variation.
 
 *Table 2. Waveform Comparison Metrics*
 
@@ -262,53 +262,29 @@ This allows us to obtain a view of the distribution of leads and sea-ice caused 
 
 #### 4.2.2 Waveform Shape
 
-The shapes of the two waveform types follow expected patterns. The sea-ice return rises gradually from early bins: the greater roughness of the sea ice is expected to lead to greater scattering and therefore less concentrated pulse return per unit time. The fact that the "leading edge" occurs earlier for sea-ice than leads also indicates that the sea-ice elevation is higher (the pulse hits it earlier), which is also expected. By contrast, the lead return is much sharper, in line with the smoother surface of the leads (which causes almost all energy to be reflected back at a specific, well-defined time from a single point directly below the satellite)
+The shapes of the two waveform types follow expected patterns. As seen in the unnormalised Figure 3, the lead mean has substantially higher peak power than the sea-ice mean, reflecting the documented difference in backscatter coefficient (σ⁰) between specular leads and diffuse sea ice.[3][4] From Figure 6, we observe that the sea-ice return rises gradually from early bins: the greater roughness of the sea ice is expected to lead to greater scattering and therefore less concentrated pulse return per unit time. The fact that the "leading edge" occurs earlier for sea-ice than leads also indicates that the sea-ice elevation is higher (the pulse hits it earlier), which is also expected. By contrast, the lead return is much sharper, in line with the smoother surface of the leads (which causes almost all energy to be reflected back at a specific, well-defined time from a single point directly below the satellite).
 
-The tighter standard deviation envelope for sea-ice suggests that, along the satellite's track, sea-ice echoes are fairly homogeneous in terms of roughness properties. By contrast, he widely varying lead standard deviation may correspond to the significant variation in lead width (e.g. for thin leads, the return signal may be diluted by surrounding ice), state (e.g. whether the lead is partially frozen), and shape.
-
- This morphological contrast is the physical basis for all waveform-based lead classifiers in the literature [3][4][5][8] and is clearly reproduced by the GMM clustering without any supervised input.
-
- **Analysis:** Several physically meaningful features emerge from this composite:
-
-1. **Peak power contrast:** The lead mean has substantially higher peak power than the sea-ice mean. This reflects the well-documented difference in backscatter coefficient (σ⁰) between specular leads and diffuse sea ice [3][4]. A calm water surface concentrates energy back toward nadir, dramatically increasing σ⁰ and peak waveform amplitude.
-
-2. **Waveform width:** The lead mean is sharper and more peaked, while the sea-ice mean is broader with a slower trailing-edge decay. The sea-ice trailing edge contains energy scattered from off-nadir surface elements across the effective footprint, whereas the lead return is dominated by the nadir specular point.
-
-3. **Sea-ice ±1σ envelope — narrow and smooth:** The sea-ice standard deviation envelope is relatively tight and consistent across range bins, indicating that waveforms are uniform from footprint to footprint along the track. This reflects the broadly stable surface properties of consolidated winter sea ice.
-
-4. **Lead ±1σ envelope — wide:** The lead standard deviation envelope is markedly broader, indicating high waveform-to-waveform variability. This is physically meaningful: leads vary significantly in width, state (open water vs. thin nilas), and geometry. Narrow leads produce mixed ice-water returns (reducing apparent peakiness), while wide leads produce cleaner specular returns — and the ensemble of lead waveforms captures this entire range [3][8].
-
-5. **Trailing-edge oscillations in the lead mean:** The slight ringing visible in the lead composite arises from between-waveform misalignment — different echoes have slightly different tracker ranges, shifting the peak position by sub-bin amounts. This is addressed by the FFT alignment in Figure 4.
-
-
-- The **lead mean sharpens considerably** — the trailing-edge oscillations largely disappear and the peak becomes narrower and better defined, confirming that the ringing in Figure 3 was an instrumental artefact (tracker-range jitter) rather than a physical signal. The resulting template is consistent with the idealised specular-point waveform shape described in altimetry retracking literature.
-- The **lead ±1σ envelope narrows around the peak**, indicating that part of the intra-cluster spread in Figure 3 came from misalignment rather than genuine physical variability in lead returns. The remaining spread reflects true variability in lead properties.
-- The **sea-ice composite changes less dramatically**, as expected: the broad waveform shape is inherently insensitive to sub-bin shifts because its power is distributed across many range bins. The modest tightening of the sea-ice ±1σ confirms that some variability was instrumental.
-
+The tighter standard deviation envelope for sea-ice suggests that, along the satellite's track, sea-ice echoes are fairly homogeneous in terms of roughness properties. By contrast, the lead standard deviation envelope is markedly broader, which may correspond to the significant variation in lead width (e.g. for thin leads, the return signal may be diluted by surrounding ice), state (e.g. whether the lead is partially frozen), and shape. In general, the classification aligns with physical expectations and past analyses in the literature.[3][4]
 
 ### 4.3 Results
 
+Finally, we validate our predictions against ESA official flag data. As the data is imbalanced (sea ice is more prevalent than leads), accuracy is an unreliable metric. In place, a confusion matrix is calculated (Figure 7), from which per-class precision, recall and F1-scores (the harmonic mean of precision and recall) are derived (Table 3). Out of the 12,195 observations, the confusion matrix shows only 24 misclassifications of lead as sea ice, and 22 of sea ice as lead, resulting in an F1-score of 1.00 for sea ice and 0.99 for lead. 
+
 
 <p align="center">
-  <img src="/images/ConfusionMatrix.png" width="70%" alt="Sentinel 3 SRAL Diagram">
+  <img src="/images/ConfusionMatrix.png" width="50%" alt="Sentinel 3 SRAL Diagram">
   <br>
   <em>Figure 7: onfusion matrix comparing GMM cluster labels against ESA official L2 surface-type flags for all 12,195 classified waveforms. Rows = ESA ground truth; columns = GMM prediction..</em>
 </p>
 
-**Raw counts:**
-
-```
-                  Pred: Sea Ice   Pred: Lead
-True: Sea Ice          8856            22
-True: Lead               24          3293
-```
-
-**Classification Report:**
+*Table 3. Classification Report*
 
 | Class | Precision | Recall | F1-Score | Support |
 |-------|-----------|--------|----------|---------|
 | Sea Ice (0) | 1.00 | 1.00 | 1.00 | 8,878 |
 | Lead (1) | 0.99 | 0.99 | 0.99 | 3,317 |
+
+The results support the findings of Dettmering et al. (2018),
 
 **Analysis:** With only 46 misclassifications out of 12,195 observations, the GMM achieves near-perfect agreement with the ESA operational product. Several interpretive points are important:
 
@@ -388,13 +364,12 @@ GEOL0069-Week4/
 
 [3] Wernecke, A. and Kaleschke, L. (2015). Lead detection in Arctic sea ice from CryoSat-2: quality assessment, lead area fraction and width distribution. *The Cryosphere*, 9, 1955–1968. https://doi.org/10.5194/tc-9-1955-2015
 
-[4] Willms, N., Lorenz, C., Dettmering, D., and Müller, F.L. (2022). Lead Detection in the Arctic Ocean from Sentinel-3 Satellite Data: A Comprehensive Assessment of Thresholding and Machine Learning Classification Methods. *Marine Geodesy*, 45(5), 479–512. https://doi.org/10.1080/01490419.2022.2089412
+[4] Bij de Vaate, I., Martin, E., Slobbe, D. C., Naeije, M., & Verlaan, M. (2022). Lead Detection in the Arctic Ocean from
+Sentinel-3 Satellite Data: A Comprehensive Assessment of Thresholding and Machine Learning Classification Methods.
+Marine Geodesy, 45(5), 462-495. https://doi.org/10.1080/01490419.2022.2089412
 
-[5] Dettmering, D., Wynne, A., Müller, F.L., Passaro, M., and Seitz, F. (2018). Lead Detection in Polar Oceans — A Comparison of Different Classification Methods for CryoSat-2 SAR Data. *Remote Sensing*, 10(8), 1190. https://doi.org/10.3390/rs10081190
 
 [6] MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. *Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability*, 1, 281–297.
-
-[7] Reynolds, D.A. (2009). Gaussian Mixture Models. In *Encyclopedia of Biometrics*. Springer, Boston, MA. https://doi.org/10.1007/978-0-387-73003-5_196
 
 [8] Lee, S., Im, J., Kim, J., Kim, M., Shin, M., Kim, H.-C., and Quackenbush, L.J. (2018). Arctic lead detection using a waveform mixture algorithm from CryoSat-2 data. *The Cryosphere*, 12, 1665–1679. https://doi.org/10.5194/tc-12-1665-2018
 
