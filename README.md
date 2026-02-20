@@ -71,7 +71,7 @@ Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to d
   <img src="/images/Sentinel_3_SRAL_Diagram.png" width="50%" alt="Sentinel 3 SRAL Diagram">
 </p>
 
-*Figure 1. Diagram of SRAL nadir track (the ground track directly beneath the satellite), as well as the ground tracks of the other Sentinel-3 instruments.*
+*Figure 1. Diagram of SRAL nadir track (the ground track directly beneath the satellite), as well as the ground tracks of the other Sentinel-3 instruments. Source: https://sentiwiki.copernicus.eu/web/s3-mission*
 
 The returned waveform encodes information about both:
 - Surface elevation, from the timing of the waveform's *leading edge* (the point where the returned signal strength first rises sharply i.e. the moment the pulse reaches the surface).       - This is measured with *Pulse Peakiness* (the ratio of peak power to mean power i.e. how sharply peaked the return is - high for leads, low for sea ice)
