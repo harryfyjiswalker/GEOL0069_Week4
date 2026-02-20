@@ -35,7 +35,7 @@
 This assignment focuses on evaluation of automated methods for discrimination of sea-ice and leads. A Gaussian Mixture Model (GMM) is trained on waveform features derived from unlabelled Sentinel-3 SAR altimetry data, and their classification performances validated against ESA surface-type flags.
 
 The notebook `GEOL0069_Week4_Assignment.ipynb` builds directly on `Chapter1_Unsupervised_Learning_Methods_Michel.ipynb` and involves:
-- Mean waveform shapes and standard deviation envelopes for each class
+- Elucidation of mean waveform shapes and standard deviation envelopes for each class
 - Feature space visualisation (pulse peakiness vs stack standard deviation)
 - Comparison of cross-correlation and orbit geometry-based waveform alignment, followed by revisualisation of mean waveform shapes and standard deviations 
 - Quantitative evaluation against ESA official L2 surface-type flags using a confusion matrix and classification report
