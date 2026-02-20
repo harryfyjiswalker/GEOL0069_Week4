@@ -131,7 +131,6 @@ plt.show()
 <p align="center">
   <img src="/images/KMeansIllustration.png" width="50%" alt="Sentinel 3 SRAL Diagram">
 </p>
----
 
 #### 2.3.2 Gaussian Mixture Models
 
