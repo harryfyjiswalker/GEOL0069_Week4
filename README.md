@@ -1,7 +1,7 @@
 # Sea Ice & Lead Classification via Unsupervised Learning
 ### GEOL0069 – Artificial Intelligence for Earth Observation | Week 4 Assignment
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)]((https://colab.research.google.com/drive/1zC4AWfp0Af7_LH2F_ZHQNeYrFT6Oe19A#scrollTo=WeH6ZxyJqK_P))
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1zC4AWfp0Af7_LH2F_ZHQNeYrFT6Oe19A)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 
 ---
