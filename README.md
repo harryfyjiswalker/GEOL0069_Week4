@@ -171,7 +171,6 @@ plt.show()
 <p align="center">
   <img src="/images/GMMIllustration.png" width="50%" alt="Sentinel 3 SRAL Diagram">
 </p>
----
 
 ## 3. Methods
 
