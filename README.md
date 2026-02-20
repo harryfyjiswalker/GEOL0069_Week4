@@ -110,11 +110,23 @@ Drawbacks:
 - *Non-convexity:* The loss surface in K-means in non-convex and therefore prone to lcoal optima, so the final result depends strongly on the initial random mean positions (K-means++ can be used to circumvent this issue by choosing initial centroids that are far apart from each other)
 
 ```python
+# Import KMeans algorithm from scikit-learn library, alongside matplotlib and numpy
 from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import numpy as np
 
-kmeans = KMeans(n_clusters=2, random_state=0, n_init=10)
-kmeans.fit(data_cleaned)
-clusters_kmeans = kmeans.predict(data_cleaned)
+# Generate 2D array of 100 rows and 2 columns of random data
+X = np.random.rand(100, 2)
+
+kmeans = KMeans(n_clusters=4) #initialise K-means
+kmeans.fit(X) #iterative movement of cluster centres
+y_kmeans = kmeans.predict(X) #assign labels to each data point based on which centroid it is closer to
+
+# Plotting
+plt.scatter(X[:, 0], X[:, 1], c=y_kmeans, cmap='viridis')
+centers = kmeans.cluster_centers_
+plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
+plt.show()
 ```
 
 ---
@@ -129,11 +141,26 @@ A GMM models the data as a weighted sum of *K* multivariate Gaussian distributio
 Unlike K-Means, GMM allows each cluster to have a **different covariance structure** and outputs a *soft* classification (probability of class membership), which is better suited here because the two clusters have visibly different spreads in feature space. Dettmering et al. (2018) [5] demonstrated that unsupervised methods applied to CryoSat-2 stack statistics consistently outperform threshold-based approaches, achieving overall accuracies above 97%.
 
 ```python
+#Import GMM algorithm from scikit-learn
 from sklearn.mixture import GaussianMixture
+import matplotlib.pyplot as plt
+import numpy as np
 
-gmm = GaussianMixture(n_components=2, random_state=0)
-gmm.fit(data_cleaned)
-clusters_gmm = gmm.predict(data_cleaned)
+# Same generation of random sample data
+X = np.random.rand(100, 2)
+
+# GMM model
+gmm = GaussianMixture(n_components=3) #initialise GMM (where N_components means number of Gaussian distributions)
+gmm.fit(X) #begin Expectation-Maximisation
+y_gmm = gmm.predict(X) #assign each point to Gaussian Distribution it most likely belongs to
+
+# Plotting
+plt.scatter(X[:, 0], X[:, 1], c=y_gmm, cmap='viridis')
+centers = gmm.means_
+plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
+plt.title('Gaussian Mixture Model')
+plt.show()
+
 ```
 ---
 
