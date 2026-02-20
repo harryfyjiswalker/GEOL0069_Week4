@@ -200,35 +200,64 @@ Two-component GMM is selected over K-means for clustering here given its previou
 
 ---
 
-## Discussion and Results
+## 5 Discussion and Results
 
-### Feature Space Analysis
-
-We first analyse the feature space to evaluate the model's success in separating the two classes, plotting $\sigma_0$ (dB), the backscatter coefficient (a measure of how strongly the surface reflects the radar pulse back towards the satellite) against both PP and SSD, as well as PP against SSD to asses how well the two clusters separate in the classification feature space itself.[9] We observe strong separation following intuitive patterns: the sea-ice cluster cluster occupies the low-peakiness, weak-backscatter, high-SSD regions, reflecting the more diffuse, multi-angular return expected from a rough ice surface compared to the smooth leads. The selongated, non-spherical cluster shapes validate the choice of GMM over K-means.
-
+### 5.1 Feature Space Analysis
 
 <p align="center">
-  <img src="/images/ClusteringFeatureSpace1.png" width="90%" alt="Sentinel 3 SRAL Diagram">
+  <img src="/images/ClusteringFeatureSpace1.png" width="100%" alt="Sentinel 3 SRAL Diagram">
+  <br>
+  <em>Figure 2: Clustering feature spaces for the Gaussian Mixture Model.</em>
 </p>
 
-sdf
+We first analyse the feature space (Figure 2) to evaluate the model's success in separating the two classes, plotting $\sigma_0$ (dB), the backscatter coefficient (a measure of how strongly the surface reflects the radar pulse back towards the satellite) against both PP and SSD, as well as PP against SSD to asses how well the two clusters separate in the classification feature space itself.[9] We observe strong separation following intuitive patterns: the sea-ice cluster cluster occupies the low-peakiness, weak-backscatter, high-SSD regions, reflecting the more diffuse, multi-angular return expected from a rough ice surface compared to the smooth leads. The selongated, non-spherical cluster shapes validate the choice of GMM over K-means.
+
+### 5.2 Echo Waveform Analysis
+
+#### 5.2.1 Waveform Alignment
+
+We then analyse the mean and standard deviation of the different wave form classes, an initial visualisation of which is shown in Figure 3. 
+
+<p align="center">
+  <img src="/images/ClusteringFeatureSpace1.png" width="100%" alt="Sentinel 3 SRAL Diagram">
+  <br>
+  <em>Figure 2: Clustering feature spaces for the Gaussian Mixture Model.</em>
+</p>
+
+It is noted, however, that when many waveforms are recorded along a satellite track, each one is centred slightly differently within the 256-bin window. As such, for fairer comparison, initial alignment of the waveforms is required. For this, two methods are investigated:
+- *Cross-correlation:* Each waveform is aligned to the first waveform in the cluster using cross-correlation (which finds the shift that maximises the similarity between two signals)[10]
+- *Physics-based alignment:* Alignment using the known orbit geometry, developed at the Alfred Wegner Institute [11]
+
+The results of alignment using cross-correlation and orbit geometry are displayed in Figure 4 and 5, respectively.
+
+<p align="center">
+  <img src="/images/ClusteringFeatureSpace1.png" width="100%" alt="Sentinel 3 SRAL Diagram">
+  <br>
+  <em>Figure 2: Clustering feature spaces for the Gaussian Mixture Model.</em>
+</p>
 
 
+We observe that cross-correlation performs poorly in aligning the waveforms on this data. As cross-correlation works by finding the shift that maximises the similarity between two signals, it works well when waveforms are of similar shape. It is possible that the significant noise present in sea-ice and lead waveforms lead to the lack of a dominant feature for cross-correlation to use, instead basing shifts on the noise.
+
+<p align="center">
+  <img src="/images/ClusteringFeatureSpace1.png" width="100%" alt="Sentinel 3 SRAL Diagram">
+  <br>
+  <em>Figure 2: Clustering feature spaces for the Gaussian Mixture Model.</em>
+</p>
 
 
+By contrast, the physics-based alignment produces a meaningful improvement for both surface classes.
 
-> **Figure to include here:** `figures/feature_space_scatter.png`  
-> Produce by running the scatter plot cell that plots **pulse peakiness** (x-axis) vs **stack standard deviation** (y-axis), colour-coded by GMM cluster label (0 = sea ice, 1 = lead). Save with `plt.savefig('figures/feature_space_scatter.png', dpi=150, bbox_inches='tight')`.
+*   Peak height: The lead mean peak height increases from 0.31 to 0.77, demonstrating that averaging the peaks without alignment had resulted in flattening of the peak due to differing bin positions of the peak along the x-axis. Alignment appears to allow recovery of a peak closer to the true shape of an individual echo (as observed in the first plot below). The sea ice peak also increases, from 0.47 to 0.74. As sea-ice waveforms are natively broader, the peak is less sensitive to small bin shifts; however, it is evident that the lack of alignment still caused suppresion of the peak
+*   Standard deviation: The lead mean standard deviation decreases from 0.026 to 0.018, demonstrating that a significant proprtion of the spread in the unaligned calculation was due to instrumental rather than physical variability. The sea-ice mean standard deviation also decreases, but less sharply, suggesting that the instrumental variation contributed less to the standard deviation than in the case of leads.
 
-![Feature Space Scatter](figures/feature_space_scatter.png)
+This allows us to obtain a view of the distribution of leads and sea-ice caused solely by physical, rather than instrumental, variation.
 
-**Figure 1.** 2D scatter plot of pulse peakiness versus stack standard deviation for all 12,195 valid echoes, colour-coded by GMM cluster assignment.
+Table 1
 
-**Analysis:** The scatter reveals two well-separated populations. The lead cluster is concentrated in the **high-peakiness, low-SSD** corner — consistent with the near-specular backscatter from calm open water [3][4]. The sea-ice cluster occupies the **low-peakiness, high-SSD** region, reflecting the diffuse, multi-angular return from a rough ice surface. The elongated shape of the sea-ice cluster compared to the compact lead cluster explains why GMM outperforms K-Means: a flexible covariance structure is needed to accurately describe both populations simultaneously. This feature-space geometry is consistent with that reported for CryoSat-2 data in Wernecke and Kaleschke (2015) [3] and Dettmering et al. (2018) [5].
+#### 5.2.2 Waveform Shape
 
----
-
-### Individual Echo Waveforms
+**Analysis:** Individual waveforms confirm the aggregate statistics. Sea-ice echoes display a gently rising leading edge, a moderate peak, and a long gradual trailing edge — reflecting scattering contributions from multiple surface facets across the large altimeter footprint. Lead echoes show a steep, narrow spike followed by an abrupt decay, the hallmark of near-specular reflection from a smooth water surface. This morphological contrast is the physical basis for all waveform-based lead classifiers in the literature [3][4][5][8] and is clearly reproduced by the GMM clustering without any supervised input.
 
 > **Figures to include here:** `figures/sample_waveforms_sea_ice.png` and `figures/sample_waveforms_leads.png`  
 > Produce by running the cells that plot the first 5 echoes from `waves_cleaned[clusters_gmm == 0]` and `waves_cleaned[clusters_gmm == 1]` respectively. Save each.
@@ -239,8 +268,7 @@ sdf
 **Figure 2a (top).** Representative individual sea-ice echo waveforms (cluster 0).  
 **Figure 2b (bottom).** Representative individual lead echo waveforms (cluster 1).
 
-**Analysis:** Individual waveforms confirm the aggregate statistics. Sea-ice echoes display a gently rising leading edge, a moderate peak, and a long gradual trailing edge — reflecting scattering contributions from multiple surface facets across the large altimeter footprint. Lead echoes show a steep, narrow spike followed by an abrupt decay, the hallmark of near-specular reflection from a smooth water surface. This morphological contrast is the physical basis for all waveform-based lead classifiers in the literature [3][4][5][8] and is clearly reproduced by the GMM clustering without any supervised input.
-
+### 5.3 Results
 ---
 
 ### Mean Echo Shapes & Standard Deviation Envelopes
@@ -400,7 +428,11 @@ GEOL0069-Week4/
 
 [9] https://elisecolin.medium.com/what-are-the-physical-quantities-in-a-sar-image-c788a8265abd
 
+[10] https://www.mathworks.com/help/signal/ug/align-signals-using-cross-correlation.html
+[11] 
+- (developed at the [Alfred Wegener Institute (AWI)](https://gitlab.awi.de/siteo/aligned-waveform-generator))
 ---
+
 
 ## Contact
 
