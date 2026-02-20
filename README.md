@@ -33,63 +33,55 @@
 
 ## 1. Project Overview
 
-This assignment focuses on evaluation of automated methods for discrimination of sea-ice and leads. Two unsupervised clustering algorithms - K-means and Gaussian Mixture Models (GMMs) - are trained on waveform features derived from unlabelled Sentinel-3 SAR altimetry data, and their classification performances validated against ESA surface-type flags.
+This assignment focuses on evaluation of automated methods for discrimination of sea-ice and leads. A Gaussian Mixture Models (GMMs) is trained on waveform features derived from unlabelled Sentinel-3 SAR altimetry data, and their classification performances validated against ESA surface-type flags.
 
-The notebook ... builds directly on `Chapter1_Unsupervised_Learning_Methods_Michel.ipynb` and extends it with:
-- Mean echo shapes and standard deviation envelopes for each class
+The notebook ... builds directly on `Chapter1_Unsupervised_Learning_Methods_Michel.ipynb` and involves:
+- Mean waveform shapes and standard deviation envelopes for each class
 - Feature space visualisation (pulse peakiness vs stack standard deviation)
-- Sub-bin FFT waveform alignment to remove tracker-range jitter before compositing
+- Comparison of cross-correlation and orbit geometry-based waveform alignment, followed by revisualisation of mean waveform shapes and standard deviations 
 - Quantitative evaluation against ESA official L2 surface-type flags using a confusion matrix and classification report
 
-The GMM-based classifier achieves an overall accuracy of approximately 99.6%, demonstrating that a two component mixture model applied to just two features is sufficient to cleanly separate these surface types. 
+The GMM-based classifier achieves per-class F1-scores of 1.00 and 0.99 for sea ice and lead respectively, demonstrating that a two component mixture model applied to just two features is sufficient to cleanly separate these surface types. 
 
 ---
 
 ## 2. Background
 
-### 2.1 Artic Leads
+### 2.1 Arctic Leads
 
+Sea ice leads form when wind and ocean currents exert mechanical stress on the ice, causing it to pull apart or slide against itself until it fractures into long, narrow channels of open water. These leads play a significant role in climate regulation by facilitating heat and gas exchange between the ocean and atmosphere - accounting for approximately 70% of total upward heat transfer from the ocean in winter and accelerating melting by absorbing solar radiation in the summer - while also serving both as points of access to the surface (and air) for marine animals like seals and natural corridors for human navigation.[1] As such, identifying and mapping these leads is of importance. For this, Synthetic Aperture Radar (SAR) data, in combination with unsupervised learning techniques, can be effective.[3][4]
 
-Over the polar oceans, distinguishing **sea ice** from **leads** is a critical preprocessing step before any freeboard or sea-ice thickness retrieval. The ESA operational product itself uses waveform peakiness thresholds to perform this classification [1].
+### 2.1 SAR Radar Altimeter
 
-- **Leads** are narrow fractures in sea ice exposing open, calm water. Their near-flat surface acts as a specular reflector, returning a narrow, high-power spike with very high peakiness and low stack standard deviation [3].
-- **Sea ice** surfaces are rough and heterogeneous, producing a broad, lower-amplitude echo with a gradual decay and higher stack standard deviation [4].
-
-This physical contrast means both surface types occupy well-separated regions in waveform-feature space, which the unsupervised methods in this project exploit — without any labelled training examples.
-
-Beyond their role in altimetry processing, leads are geophysically important in their own right. They represent the dominant pathway for turbulent heat and moisture exchange between the Arctic Ocean and atmosphere, and their spatial distribution governs sea-ice production and brine rejection [3]. Understanding lead occurrence is relevant to polar climate modelling and sea-ice mass balance estimates.
-
-### 2.2 SAR Radar Altimeter
-
-Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to detect surface features. Unlike optical satellite data, the approach is unaffected by cloud cover or months of darkness, making it invaluable for day- and year-round monitoring. A key application of this approach is in SAR altimetry (e.g. via the Sentinel-3 SAR Radar Altimeter (SRAL) - which involves inferring surface elevation from the time taken from emission of the pulse and detection of the returning signal (called a "waveform" or "echo"). This allows much higher resolution measurements compared to conventional methods, which is essential for detection of leads, which may only be tens to hundreds of metres wide:
+SAR (SAR) measures the backscatter of microwave pulses to detect surface features. Unlike optical satellite data, the approach is unaffected by cloud cover or months of darkness, making it invaluable for day- and year-round monitoring.[2] A key application of this approach is in SAR altimetry (e.g. via the Sentinel-3 SAR Radar Altimeter (SRAL) - which involves inferring surface elevation from the time taken from emission of the pulse and detection of the returning signal (called a "waveform" or "echo"). This allows much higher resolution measurements compared to conventional methods, which is essential for detection of leads, which may only be tens to hundreds of metres wide:
 - Conventional altimeters transmit a single broad radar pulse that illuminates a large patch of surface - roughly 20km wide - simultaneously. The return signal is therefore an average over that entire area, which is problematic in contexts such as sea ice where the surface changes character over much shorter distances.
-- SAR altimeters address this by recording many pulses in quick succession as the satellite moves along its orbit, then combining them (using coherent multi-look processing using Doppler techniques) to isolate the return from a much smaller strip of ground - around 300m - directly beneath the satellite.[2]
+- SAR altimeters address this by recording many pulses in quick succession as the satellite moves along its orbit, then combining them (using coherent multi-look processing using Doppler techniques) to isolate the return from a much smaller strip of ground - around 300m - directly beneath the satellite.[3][4]
 
 <p align="center">
   <img src="/images/Sentinel_3_SRAL_Diagram.png" width="50%" alt="Sentinel 3 SRAL Diagram">
 </p>
 
-*Figure 1. Diagram of SRAL nadir track (the ground track directly beneath the satellite), as well as the ground tracks of the other Sentinel-3 instruments. Source: https://sentiwiki.copernicus.eu/web/s3-mission*
+*Figure 1. Diagram of SRAL nadir track (the ground track directly beneath the satellite), as well as the ground tracks of the other Sentinel-3 instruments.[3]*
 
 The returned waveform encodes information about both:
 - Surface elevation, from the timing of the waveform's *leading edge* (the point where the returned signal strength first rises sharply i.e. the moment the pulse reaches the surface). 
-- Surface texture, from the shape of the waveform (a smooth surface e.g. a lead reflects the pulse back cleanly, producing a sharp, intense return; a rough surface e.g. sea ice scatters the pulse in many directions so the energy arrives back at the satellite over a longer time period, producing a weaker, broader return)
+- Surface texture, from the shape of the waveform (a smooth surface e.g. a lead reflects the pulse back cleanly, producing a sharp, intense return; a rough surface e.g. sea ice scatters the pulse in many directions so the energy arrives back at the satellite over a longer time period, producing a weaker, broader return) [5]
 
-Such information can be extracted via two key features:
+Such information can be extracted via two key features:[5][6]
 
 | Feature | Physical Meaning |
 |---|---|
 | **Pulse Peakiness (PP)** | Ratio of peak power to mean power across the waveform. Leads produce very high peakiness (sharp specular returns); sea ice produces low peakiness (diffuse returns). |
-| **Stack Standard Deviation (SSD)** | Spread of power across different viewing angles as the satellite passes overhead. Leads produce a narrow angular response (low SSD); sea ice produces a broad response (high SSD). |
+| **Stack Standard Deviation (SSD)** | Spread of power across different viewing angles as the satellite passes overhead. Leads produce a narrow angular response (low SSD); sea ice produces a broad response (high SSD). | 
 
-An unsupervised learning algorithm can exploit differences in these features to distinguish between sea ice and leads.
+An unsupervised learning algorithm can exploit differences in these features to distinguish between sea ice and leads.[7]
 
 ### 2.3 Clustering algorithms
 
-Unsupervised learning is used to elucidate underlying patterns in data without the need for labelled training data. There are two main types: clustering (grouping data points based on similarity) and dimensionality reduction (compressing data to lower the dimension space). The principles behind two of the main clustering approaches, K-means and Gaussian Mixture Models (GMMs), is briefly outlined below. I provide more detail on the mathematical formulation of the techniques in [this](/Clustering_Algorithms_Summary__K_means_and_Gaussian_Mixture_Models.pdf) set of notes.
+Unsupervised learning is used to elucidate underlying patterns in data without the need for labelled training data. There are two main types: clustering (grouping data points based on similarity) and dimensionality reduction (compressing data to lower the dimension space). The principles behind two of the main clustering approaches, K-means and Gaussian Mixture Models (GMMs), is briefly outlined below. I provide more detail on the mathematical formulation of these techniques in [this](/Clustering_Algorithms_Summary__K_means_and_Gaussian_Mixture_Models.pdf) set of notes.
 
 #### 2.3.1 K-means
-K-Means partitions the feature space into *k* clusters by iteratively assigning each point to its nearest centroid and recomputing the position of the centroids until there is minimal or no further movement (convergence).[6] It is a centroid-based clustering algorithm (i.e. that groups data around central points) that works by minimising the Within-Cluster Sum of Squares (WCCS), also known as distortion:
+K-Means partitions the feature space into *k* clusters by iteratively assigning each point to its nearest centroid and recomputing the position of the centroids until there is minimal or no further movement (convergence). It is a centroid-based clustering algorithm (i.e. that groups data around central points) that works by minimising the Within-Cluster Sum of Squares (WCCS), also known as distortion:
 
 $$J(c, \mu) = \sum_{i=1}^{n} \sum_{j=1}^{k} \mathbb{1}\{c_i = j\} \|x_i - \mu_j\|^2$$
 
@@ -102,7 +94,7 @@ The objective function $J$ depends on two sets of variables: the discrete assign
 1.  *Assignment Step:* Fix $\mu$ and minimize $J$ with respect to $c$ (assign each point to its nearest centroid).
 2.  *Update Step:* Fix $c$ and minimize $J$ with respect to $\mu$ (move each centroid to the mean of its assigned points).
 
-This process repeats until the assignments no longer change or a maximum number of iterations is reached.
+This process repeats until the assignments no longer change or a maximum number of iterations is reached.[8]
 
 Advantages:
 - Requires no prior knowledge of cluster shape
@@ -112,6 +104,9 @@ Drawbacks:
 - *Spherical Assumption:* Because K-means uses the L2 norm to assign points to the nearest centroid, it implicitly assumes that clusters are spherical and have similar diameters. As such, it can be ineffective on datasets featuring non-spherical geometries—such as elongated, elliptical, or manifold shapes—as well as clusters with significantly varying densities or very different sizes.
 - *Hard-clustering:* In K-means, a point belongs entirely to one cluster, even if it is exactly on the border between the two; as such, it forces a binary decision on ambiguous data ponts.
 - *Non-convexity:* The loss surface in K-means in non-convex and therefore prone to lcoal optima, so the final result depends strongly on the initial random mean positions (K-means++ can be used to circumvent this issue by choosing initial centroids that are far apart from each other)
+- k (number of clusters) must be chosen manually [9]
+
+An example implementation is shown below.
 
 ```python
 # Import KMeans algorithm from scikit-learn library, alongside matplotlib and numpy
@@ -139,12 +134,16 @@ plt.show()
 
 #### 2.3.2 Gaussian Mixture Models
 
-A GMM models the data as a weighted sum of *K* multivariate Gaussian distributions, each with its own mean **μ** and covariance **Σ** [7]. Parameters are estimated via the **Expectation-Maximisation (EM)** algorithm:
+A GMM models the data as a weighted sum of *K* multivariate Gaussian distributions, each with its own mean **μ** and covariance **Σ** [10]. Parameters are estimated via the **Expectation-Maximisation (EM)** algorithm:
 
 - **E-step:** compute the posterior probability that each waveform belongs to each component.
-- **M-step:** update **μ**, **Σ**, and mixing weights to maximise the data log-likelihood.
+- **M-step:** update **μ**, **Σ**, and mixing weights to maximise the data log-likelihood.[11]
 
-Unlike K-Means, GMM allows each cluster to have a **different covariance structure** and outputs a *soft* classification (probability of class membership), which is better suited here because the two clusters have visibly different spreads in feature space. Dettmering et al. (2018) [5] demonstrated that unsupervised methods applied to CryoSat-2 stack statistics consistently outperform threshold-based approaches, achieving overall accuracies above 97%.
+These have advantages over k-means due to:
+- Flexibility in cluster shapes: GMM allows each cluster to have a different covariance structure
+- Probabilistic assignment: GMMs outputs a *soft* classification (probability of class membership), which represents ambiguous data points more completely[12]
+
+Again, below is an example implementation.
 
 ```python
 #Import GMM algorithm from scikit-learn
@@ -187,7 +186,7 @@ The ESA official surface-type flag (`surf_class_20_ku`) is used as ground truth:
 
 ### 3.2 Gaussian Mixture Models (GMM)
 
-Two-component GMM is selected over K-means for clustering here given its previous success in this task (Dettmering et al, 2018), with random state set to zero to allow for reproducibility.[5] The model is fitted to the cleaned waveforms and the predicted ratio of leads to sea-ice checked for physical plausibility, with significantly more sea ice expected.[3]
+Two-component GMM is selected over K-means for clustering here, to provide robustness to potentially non-spherical clusters (Liu et al., 2025), with random state set to zero to allow for reproducibility.[7] The model is fitted to the cleaned waveforms and the predicted ratio of leads to sea-ice checked for physical plausibility, with significantly more sea ice expected.[5]
 
 **Cluster counts from GMM:**
 
@@ -208,7 +207,7 @@ Two-component GMM is selected over K-means for clustering here given its previou
   <em>Figure 2: Clustering feature spaces for the Gaussian Mixture Model.</em>
 </p>
 
-We first analyse the feature space (Figure 2) to evaluate the model's success in separating the two classes, plotting $\sigma_0$ (dB), the backscatter coefficient (a measure of how strongly the surface reflects the radar pulse back towards the satellite) against both PP and SSD, as well as PP against SSD to asses how well the two clusters separate in the classification feature space itself.[9] We observe strong separation following intuitive patterns: the sea-ice cluster cluster occupies the low-peakiness, weak-backscatter, high-SSD regions, reflecting the more diffuse, multi-angular return expected from a rough ice surface compared to the smooth leads. The selongated, non-spherical cluster shapes validate the choice of GMM over K-means.
+We first analyse the feature space (Figure 2) to evaluate the model's success in separating the two classes, plotting $\sigma_0$ (dB), the backscatter coefficient (a measure of how strongly the surface reflects the radar pulse back towards the satellite) against both PP and SSD, as well as PP against SSD to assess how well the two clusters separate in the classification feature space itself.[2] We observe strong separation following intuitive patterns: the sea-ice cluster cluster occupies the low-peakiness, weak-backscatter, high-SSD regions, reflecting the more diffuse, multi-angular return expected from a rough ice surface compared to the smooth leads. The elongated, non-spherical cluster shapes validate the choice of GMM over K-means.
 
 ### 4.2 Echo Waveform Analysis
 
@@ -224,8 +223,8 @@ We compute the mean waveform across all echoes in that cluster and the standard 
 
 It is noted, however, that when many waveforms are recorded along a satellite track, each one is centred slightly differently within the 256-bin window, leading to the lack of sharpness in the peaks observed in Figure 3. As such, for fairer comparison, initial alignment of the waveforms is required. For this, two methods are investigated:
 
-- *Cross-correlation:* Each waveform is aligned to the first waveform in the cluster using cross-correlation (which finds the shift that maximises the similarity between two signals)[10]
-- *Physics-based alignment:* Alignment using the known orbit geometry, developed at the Alfred Wegner Institute [11]
+- *Cross-correlation:* Each waveform is aligned to the first waveform in the cluster using cross-correlation (which finds the shift that maximises the similarity between two signals)[13]
+- *Physics-based alignment:* Alignment using the known orbit geometry, developed at the Alfred Wegner Institute [14]
 
 The results of alignment using cross-correlation and orbit geometry are displayed in Figure 4 and 5, respectively.
 
@@ -234,7 +233,6 @@ The results of alignment using cross-correlation and orbit geometry are displaye
   <br>
   <em>Figure 4: Effect of waveform alignment using cross-correlation.</em>
 </p>
-
 
 We observe that cross-correlation performs poorly in aligning the waveforms on this data: the waveform shape is pulled further from the expected sharp appearance. As cross-correlation works by finding the shift that maximises the similarity between two signals, it works well when waveforms are of similar shape. It is possible that the significant noise present in sea-ice and lead waveforms lead to the lack of a dominant feature for cross-correlation to use, instead basing shifts on the noise.
 
@@ -246,8 +244,8 @@ We observe that cross-correlation performs poorly in aligning the waveforms on t
 
 By contrast, the physics-based alignment (of the normalised waveforms in this case) produces a meaningful improvement for both surface classes.
 
-*   Peak height: The lead mean peak height increases from 0.31 to 0.77, demonstrating that averaging the peaks without alignment had resulted in flattening of the peak due to differing bin positions of the peak along the x-axis. Alignment appears to allow recovery of a peak closer to the true shape of an individual echo (as observed in the first plot below). The sea ice peak also increases, from 0.47 to 0.74. As sea-ice waveforms are natively broader, the peak is less sensitive to small bin shifts; however, it is evident that the lack of alignment still caused suppresion of the peak
-*   Standard deviation: The lead mean standard deviation decreases from 0.026 to 0.018, demonstrating that a significant proprtion of the spread in the unaligned calculation was due to instrumental rather than physical variability. The sea-ice mean standard deviation also decreases, but less sharply, suggesting that the instrumental variation contributed less to the standard deviation than in the case of leads.
+*   Peak height: The lead mean peak height increases from 0.31 to 0.77, demonstrating that averaging the peaks without alignment had resulted in flattening of the peak due to differing bin positions of the peak along the x-axis. Alignment appears to allow recovery of a peak closer to the true shape of an individual echo (as observed in the first plot below). The sea ice peak also increases, from 0.47 to 0.74. As sea-ice waveforms are natively broader, the peak is less sensitive to small bin shifts; however, it is evident that the lack of alignment still caused suppression of the peak
+*   Standard deviation: The lead mean standard deviation decreases from 0.026 to 0.018, demonstrating that a significant proportion of the spread in the unaligned calculation was due to instrumental rather than physical variability. The sea-ice mean standard deviation also decreases, but less sharply, suggesting that the instrumental variation contributed less to the standard deviation than in the case of leads.
 
 This allows us to obtain a view of the distribution of leads and sea-ice caused solely by physical - rather than instrumental - variation.
 
@@ -262,14 +260,13 @@ This allows us to obtain a view of the distribution of leads and sea-ice caused 
 
 #### 4.2.2 Waveform Shape
 
-The shapes of the two waveform types follow expected patterns. As seen in the unnormalised Figure 3, the lead mean has substantially higher peak power than the sea-ice mean, reflecting the documented difference in backscatter coefficient (σ⁰) between specular leads and diffuse sea ice.[3][4] From Figure 6, we observe that the sea-ice return rises gradually from early bins: the greater roughness of the sea ice is expected to lead to greater scattering and therefore less concentrated pulse return per unit time. The fact that the "leading edge" occurs earlier for sea-ice than leads also indicates that the sea-ice elevation is higher (the pulse hits it earlier), which is also expected. By contrast, the lead return is much sharper, in line with the smoother surface of the leads (which causes almost all energy to be reflected back at a specific, well-defined time from a single point directly below the satellite).
+The shapes of the two waveform types follow expected patterns. As seen in the unnormalised Figure 3, the lead mean has substantially higher peak power than the sea-ice mean, reflecting the documented difference in backscatter coefficient (σ⁰) between specular leads and diffuse sea ice.[5][6] From Figure 6, we observe that the sea-ice return rises gradually from early bins: the greater roughness of the sea ice is expected to lead to greater scattering and therefore less concentrated pulse return per unit time. The fact that the "leading edge" occurs earlier for sea-ice than leads also indicates that the sea-ice elevation is higher (the pulse hits it earlier), which is also expected. By contrast, the lead return is much sharper, in line with the smoother surface of the leads (which causes almost all energy to be reflected back at a specific, well-defined time from a single point directly below the satellite).
 
-The tighter standard deviation envelope for sea-ice suggests that, along the satellite's track, sea-ice echoes are fairly homogeneous in terms of roughness properties. By contrast, the lead standard deviation envelope is markedly broader, which may correspond to the significant variation in lead width (e.g. for thin leads, the return signal may be diluted by surrounding ice), state (e.g. whether the lead is partially frozen), and shape. In general, the classification aligns with physical expectations and past analyses in the literature.[3][4]
+The tighter standard deviation envelope for sea-ice suggests that, along the satellite's track, sea-ice echoes are fairly homogeneous in terms of roughness properties. By contrast, the lead standard deviation envelope is markedly broader, which may correspond to the significant variation in lead width (e.g. for thin leads, the return signal may be diluted by surrounding ice), state (e.g. whether the lead is partially frozen), and shape. In general, the classification aligns with physical expectations and past analyses in the literature.[5][6]
 
 ### 4.3 Results
 
 Finally, we validate our predictions against ESA official flag data. As the data is imbalanced (sea ice is more prevalent than leads), accuracy is an unreliable metric. In place, a confusion matrix is calculated (Figure 7), from which per-class precision, recall and F1-scores (the harmonic mean of precision and recall) are derived (Table 3). Out of the 12,195 observations, the confusion matrix shows only 24 misclassifications of lead as sea ice, and 22 of sea ice as lead, resulting in an F1-score of 1.00 for sea ice and 0.99 for lead. 
-
 
 <p align="center">
   <img src="/images/ConfusionMatrix.png" width="50%" alt="Sentinel 3 SRAL Diagram">
@@ -284,17 +281,7 @@ Finally, we validate our predictions against ESA official flag data. As the data
 | Sea Ice (0) | 1.00 | 1.00 | 1.00 | 8,878 |
 | Lead (1) | 0.99 | 0.99 | 0.99 | 3,317 |
 
-The results support the findings of Dettmering et al. (2018),
-
-**Analysis:** With only 46 misclassifications out of 12,195 observations, the GMM achieves near-perfect agreement with the ESA operational product. Several interpretive points are important:
-
-1. **Why so high?** The ESA operational classifier itself uses pulse peakiness as its primary discriminating feature [1], so strong agreement is expected when we also use peakiness (plus stack standard deviation) as inputs. The GMM has, without any labelled data, converged to a decision boundary that closely mirrors the ESA operational threshold. This validates that peakiness and SSD form a highly discriminative feature pair — consistent with Dettmering et al. (2018) [5], who report unsupervised classifiers on CryoSat-2 stack statistics achieving >97% accuracy.
-
-2. **False sea-ice (22 cases):** Lead echoes mis-classified as sea ice. These likely correspond to **very narrow leads** (< ~300 m) whose altimeter footprint is dominated by surrounding ice, reducing apparent peakiness below the decision boundary. This type of commission error is a known limitation of all waveform-based lead classifiers [4][5].
-
-3. **False leads (24 cases):** Sea-ice echoes mis-classified as leads. These are likely caused by **smooth ice surfaces** — newly refrozen frost flowers or thin nilas — which can produce near-specular returns similar to open water [3]. This class of omission error has motivated the inclusion of additional features such as stack skewness and stack kurtosis in more advanced classifiers [5][8].
-
-4. **Context for the ~99.6% figure:** Supervised state-of-the-art methods applied directly to Sentinel-3 data (Adaptive Boosting, Neural Networks) report overall accuracies of up to 92%, while the best unsupervised method (K-medoids) achieves ~92.7% [4]. The higher accuracy here is partly explained by the close correspondence between the features used here and those in the ESA classifier, and partly by the specific scene composition of this single overpass (mostly consolidated winter sea ice with well-defined leads). Testing across a broader range of seasons and ice conditions would be expected to produce results closer to those in the published literature.
+The excellent performance supports the use of both (i) PP and SSD as effective discriminatory features for sea ice and leads and (ii) clustering algorithms as an effective means of harnessing these features, in line with previous findings.[7][15] Misclassification of lead echoes as sea ice may correspond to very narrow leads, whose altimeter footprint is dominated by surrounding ice, thus reducing apparent peakiness below the clustering decision boundary; further error analysis confirming this would be a useful next step. Similarly, sea-ice echoes misclassified as leads may correspond to smooth ice surfaces - perhaps those that have been newly refrozen - which may produce near-specular returns similar to open water.[5] Testing across a range of scenes, both varying in location and season, would also be valuable to analyse and address model robustness and transferability.
 
 ---
 
@@ -325,7 +312,7 @@ drive.mount('/content/drive')
 
 ### Data
 
-The base reference notebook is available at:  
+The base reference notebook, developed by Dr Michel Tsamados is available at:  
 https://drive.google.com/file/d/1HDSLjsWhLIDF-qbRj6sbGVd9t1LB7890/view?usp=drive_link
 
 The Sentinel-3 data is available via the [Copernicus Data Space Ecosystem](https://dataspace.copernicus.eu/). The specific file used is:
@@ -358,40 +345,53 @@ GEOL0069-Week4/
 
 ## References
 
-[1] Reinhout, T., Zawadzki, L., Féménias, P., Tournadre, J., Quartly, G., Ablain, M., ... & Potin, P. (2025). Sentinel-3 Altimetry Thematic Products for Hydrology, Sea Ice and Land Ice. *Scientific Data*, 12, 699. https://doi.org/10.1038/s41597-025-04956-3
+[1] Marcq, S. and Weiss, J. (2012) ‘Influence of sea ice lead-width distribution on turbulent heat transfer between the ocean and the atmosphere’, The Cryosphere, 6(1), pp. 143–156. doi: 10.5194/tc-6-143-2012.
 
-[2] Donlon, C., Berruti, B., Buongiorno, A., Ferreira, M.-H., Féménias, P., Frerick, J., ... & Sciarra, R. (2012). The global monitoring for environment and security (GMES) Sentinel-3 mission. *Remote Sensing of Environment*, 120, 37–57. https://doi.org/10.1016/j.rse.2011.07.024
+[2] Colin, E. (2024) ‘What are the physical quantities in a SAR image? When and Why to Calibrate in a Training Database?’, Medium, 24 August. Available at: https://elisecolin.medium.com/what-are-the-physical-quantities-in-a-sar-image-c788a8265abd (Accessed: 16 February 2026).
 
-[3] Wernecke, A. and Kaleschke, L. (2015). Lead detection in Arctic sea ice from CryoSat-2: quality assessment, lead area fraction and width distribution. *The Cryosphere*, 9, 1955–1968. https://doi.org/10.5194/tc-9-1955-2015
+[3] European Space Agency (n.d.) S3 Altimetry Instruments. Available at: https://sentiwiki.copernicus.eu/web/s3-altimetry-instruments (Accessed: 20 February 2026).
 
-[4] Bij de Vaate, I., Martin, E., Slobbe, D. C., Naeije, M., & Verlaan, M. (2022). Lead Detection in the Arctic Ocean from
+[4] Donlon, C., Berruti, B., Buongiorno, A., Ferreira, M.-H., Féménias, P., Frerick, J., Sciarra, R. (2012). The global monitoring for environment and security (GMES) Sentinel-3 mission. *Remote Sensing of Environment*, 120, 37–57. https://doi.org/10.1016/j.rse.2011.07.024
+
+[5] Wernecke, A. and Kaleschke, L. (2015). Lead detection in Arctic sea ice from CryoSat-2: quality assessment, lead area fraction and width distribution. *The Cryosphere*, 9, 1955–1968. https://doi.org/10.5194/tc-9-1955-2015
+
+[6] Bij de Vaate, I., Martin, E., Slobbe, D. C., Naeije, M., & Verlaan, M. (2022). Lead Detection in the Arctic Ocean from
 Sentinel-3 Satellite Data: A Comprehensive Assessment of Thresholding and Machine Learning Classification Methods.
 Marine Geodesy, 45(5), 462-495. https://doi.org/10.1080/01490419.2022.2089412
 
+[7] Liu, W., Tsamados, M., Petty, A., Jin, T., Chen, W. and Stroeve, J. (2025) ‘Enhanced sea ice classification for ICESat-2 using combined unsupervised and supervised machine learning’, Remote Sensing of Environment, 318, 114607. doi: 10.1016/j.rse.2025.114607.
 
-[6] MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. *Proceedings of the Fifth Berkeley Symposium on Mathematical Statistics and Probability*, 1, 281–297.
+[8] Nazarpour, K. (2022) Machine Learning - Lecture 19: K-means Clustering. [Lecture slides] INFR10086: Machine Learning, University of Edinburgh. Available at: https://homepages.inf.ed.ac.uk/htang2/mlg2022/mlg20-kmeans-slides.pdf (Accessed: 20 February 2026).
 
-[8] Lee, S., Im, J., Kim, J., Kim, M., Shin, M., Kim, H.-C., and Quackenbush, L.J. (2018). Arctic lead detection using a waveform mixture algorithm from CryoSat-2 data. *The Cryosphere*, 12, 1665–1679. https://doi.org/10.5194/tc-12-1665-2018
+[9] Google (2025) ‘Advantages and disadvantages of k-means’, Google for Developers. Available at: https://developers.google.com/machine-learning/clustering/kmeans/advantages-disadvantages (Accessed: 17 February 2026).
 
-[9] https://elisecolin.medium.com/what-are-the-physical-quantities-in-a-sar-image-c788a8265abd
+[10] Mackey, L. (2014) ‘Lecture 2’. [Lecture notes] STATS 306B: Unsupervised Learning. Stanford University. Scribed by Qian, J. and Wang, M. Available at: https://web.stanford.edu/~lmackey/stats306b/doc/stats306b-spring14-lecture2_scribed.pdf (Accessed: 20 February 2026).
 
-[10] https://www.mathworks.com/help/signal/ug/align-signals-using-cross-correlation.html
-[11] 
-- (developed at the [Alfred Wegener Institute (AWI)](https://gitlab.awi.de/siteo/aligned-waveform-generator))
+[11] GeeksforGeeks (2025) ‘Gaussian Mixture Model’, GeeksforGeeks. Available at: https://www.geeksforgeeks.org/machine-learning/gaussian-mixture-model/ (Accessed: 16 February 2026).
+
+[12] Yadav, A. (2024) ‘K Means Clustering vs Gaussian Mixture’, Medium, 13 July. Available at: https://medium.com/@amit25173/k-means-clustering-vs-gaussian-mixture-bec129fbe844 (Accessed: 17 February 2026).
+
+[13] MathWorks (2026) Align Signals Using Cross-Correlation. Available at: https://www.mathworks.com/help/signal/ug/align-signals-using-cross-correlation.html (Accessed: 16 February 2026).
+
+[14] Alfred Wegener Institute (2025) aligned-waveform-generator. Available at: https://gitlab.awi.de/siteo/aligned-waveform-generator (Accessed: 27 February 2026).
+
+[15] Dettmering D, Wynne A, Müller FL, Passaro M, Seitz F. Lead Detection in Polar Oceans—A Comparison of Different Classification Methods for Cryosat-2 SAR Data. Remote Sensing. 2018; 10(8):1190. https://doi.org/10.3390/rs10081190
+
 ---
-
 
 ## Contact
 
-**Your Name** – your.email@ucl.ac.uk  
+**Harry Fyjis-Walker** – harryfyjiswalker@gmail.com 
 Project Link: `https://github.com/YOUR_USERNAME/GEOL0069-Week4`
 
 ---
 
 ## Acknowledgements
 
-- This project is submitted as part of **GEOL0069 – Artificial Intelligence for Earth Observation**, UCL Earth Sciences Department.
+- This project is submitted as part of an assignment for **GEOL0069 – Artificial Intelligence for Earth Observation**, UCL Earth Sciences Department.
 - Base notebook and course materials provided by **Dr Michel Tsamados**, UCL.
 - Sentinel-3 data courtesy of the **European Space Agency (ESA)** / Copernicus programme.
 
 <p align="right"><a href="#sea-ice--lead-classification-via-unsupervised-learning">Back to top</a></p>
+
+
