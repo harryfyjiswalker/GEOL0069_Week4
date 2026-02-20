@@ -7,6 +7,9 @@
 
 ---
 
+<details>
+<summary><b>Click to expand Table of Contents</b></summary>
+
 ## Table of Contents
 
 1. [Project Overview](#project-overview)
@@ -28,8 +31,7 @@
 9. [Contact](#contact)
 10. [Acknowledgements](#acknowledgements)
 
----
-
+</details>
 ## Project Overview
 
 This project applies **unsupervised machine learning** to classify Sentinel-3 SAR altimetry echoes as either **sea ice** or **leads** (narrow channels of open water within sea ice) using only unlabelled waveform-derived features. The GMM-based classifier achieves **~99.6% overall accuracy** against the ESA official L2 surface-type flags, demonstrating that a two-component mixture model applied to just two features (pulse peakiness and stack standard deviation) is sufficient to cleanly separate these physically distinct surface types.
