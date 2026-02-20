@@ -214,7 +214,7 @@ We first analyse the feature space (Figure 2) to evaluate the model's success in
 
 #### 4.2.1 Waveform Alignment
 
-We then analyse the mean and standard deviation of the different wave form classes, an initial visualisation of which is shown in Figure 3. 
+We compute the mean waveform across all echoes in that cluster and the standard deviation at each range bin (a fixed slice of time after the radar pulse was transmitted), visualised in Figure 3.
 
 <p align="center">
   <img src="/images/UnalignedMeanSd.png" width="60%" alt="Sentinel 3 SRAL Diagram">
@@ -222,7 +222,7 @@ We then analyse the mean and standard deviation of the different wave form class
   <em>Figure 3: Mean and standard deviation of unaligned sea-ice and lead waveforms.</em>
 </p>
 
-It is noted, however, that when many waveforms are recorded along a satellite track, each one is centred slightly differently within the 256-bin window. As such, for fairer comparison, initial alignment of the waveforms is required. For this, two methods are investigated:
+It is noted, however, that when many waveforms are recorded along a satellite track, each one is centred slightly differently within the 256-bin window, leading to the lack of sharpness in the peaks observed in Figure 3. As such, for fairer comparison, initial alignment of the waveforms is required. For this, two methods are investigated:
 
 - *Cross-correlation:* Each waveform is aligned to the first waveform in the cluster using cross-correlation (which finds the shift that maximises the similarity between two signals)[10]
 - *Physics-based alignment:* Alignment using the known orbit geometry, developed at the Alfred Wegner Institute [11]
@@ -236,7 +236,7 @@ The results of alignment using cross-correlation and orbit geometry are displaye
 </p>
 
 
-We observe that cross-correlation performs poorly in aligning the waveforms on this data. As cross-correlation works by finding the shift that maximises the similarity between two signals, it works well when waveforms are of similar shape. It is possible that the significant noise present in sea-ice and lead waveforms lead to the lack of a dominant feature for cross-correlation to use, instead basing shifts on the noise.
+We observe that cross-correlation performs poorly in aligning the waveforms on this data: the waveform shape is pulled further from the expected sharp appearance. As cross-correlation works by finding the shift that maximises the similarity between two signals, it works well when waveforms are of similar shape. It is possible that the significant noise present in sea-ice and lead waveforms lead to the lack of a dominant feature for cross-correlation to use, instead basing shifts on the noise.
 
 <p align="center">
   <img src="/images/PhysicsBasedAlignment.png" width="70%" alt="Sentinel 3 SRAL Diagram">
@@ -244,42 +244,31 @@ We observe that cross-correlation performs poorly in aligning the waveforms on t
   <em>Figure 5: Effect of physics-based alignment using orbit geometry.</em>
 </p>
 
-
-By contrast, the physics-based alignment produces a meaningful improvement for both surface classes.
+By contrast, the physics-based alignment (of the normalised waveforms in this case) produces a meaningful improvement for both surface classes.
 
 *   Peak height: The lead mean peak height increases from 0.31 to 0.77, demonstrating that averaging the peaks without alignment had resulted in flattening of the peak due to differing bin positions of the peak along the x-axis. Alignment appears to allow recovery of a peak closer to the true shape of an individual echo (as observed in the first plot below). The sea ice peak also increases, from 0.47 to 0.74. As sea-ice waveforms are natively broader, the peak is less sensitive to small bin shifts; however, it is evident that the lack of alignment still caused suppresion of the peak
 *   Standard deviation: The lead mean standard deviation decreases from 0.026 to 0.018, demonstrating that a significant proprtion of the spread in the unaligned calculation was due to instrumental rather than physical variability. The sea-ice mean standard deviation also decreases, but less sharply, suggesting that the instrumental variation contributed less to the standard deviation than in the case of leads.
 
 This allows us to obtain a view of the distribution of leads and sea-ice caused solely by physical, rather than instrumental, variation.
 
-Table 1
+*Table 2. Waveform Comparison Metrics*
+
+| Metric | Category | Unaligned | Aligned |
+| :--- | :--- | :---: | :---: |
+| **Peak Height** (0-1 scale) | Sea Ice | 0.4653 | **0.7393** |
+| | Lead | 0.3064 | **0.7732** |
+| **Mean Std. Dev.** | Sea Ice | 0.0811 | **0.0749** |
+| | Lead | 0.0264 | **0.0180** |
 
 #### 4.2.2 Waveform Shape
 
-**Analysis:** Individual waveforms confirm the aggregate statistics. Sea-ice echoes display a gently rising leading edge, a moderate peak, and a long gradual trailing edge — reflecting scattering contributions from multiple surface facets across the large altimeter footprint. Lead echoes show a steep, narrow spike followed by an abrupt decay, the hallmark of near-specular reflection from a smooth water surface. This morphological contrast is the physical basis for all waveform-based lead classifiers in the literature [3][4][5][8] and is clearly reproduced by the GMM clustering without any supervised input.
+The shapes of the two waveform types follow expected patterns. The sea-ice return rises gradually from early bins: the greater roughness of the sea ice is expected to lead to greater scattering and therefore less concentrated pulse return per unit time. The fact that the "leading edge" occurs earlier for sea-ice than leads also indicates that the sea-ice elevation is higher (the pulse hits it earlier), which is also expected. By contrast, the lead return is much sharper, in line with the smoother surface of the leads (which causes almost all energy to be reflected back at a specific, well-defined time from a single point directly below the satellite)
 
-> **Figures to include here:** `figures/sample_waveforms_sea_ice.png` and `figures/sample_waveforms_leads.png`  
-> Produce by running the cells that plot the first 5 echoes from `waves_cleaned[clusters_gmm == 0]` and `waves_cleaned[clusters_gmm == 1]` respectively. Save each.
+The tighter standard deviation envelope for sea-ice suggests that, along the satellite's track, sea-ice echoes are fairly homogeneous in terms of roughness properties. By contrast, he widely varying lead standard deviation may correspond to the significant variation in lead width (e.g. for thin leads, the return signal may be diluted by surrounding ice), state (e.g. whether the lead is partially frozen), and shape.
 
-![Sample Sea Ice Waveforms](figures/sample_waveforms_sea_ice.png)
-![Sample Lead Waveforms](figures/sample_waveforms_leads.png)
+ This morphological contrast is the physical basis for all waveform-based lead classifiers in the literature [3][4][5][8] and is clearly reproduced by the GMM clustering without any supervised input.
 
-**Figure 2a (top).** Representative individual sea-ice echo waveforms (cluster 0).  
-**Figure 2b (bottom).** Representative individual lead echo waveforms (cluster 1).
-
-### 4.3 Results
----
-
-### Mean Echo Shapes & Standard Deviation Envelopes
-
-> **Figure to include here:** `figures/mean_std_waveforms.png`  
-> Produce by running the cell that computes `np.mean` and `np.std` of `waves_cleaned` split by `clusters_gmm`, then plots both means with `plt.fill_between` shading for ±1σ. Save with `plt.savefig('figures/mean_std_waveforms.png', dpi=150, bbox_inches='tight')`.
-
-![Mean and Std Waveforms](figures/mean_std_waveforms.png)
-
-**Figure 3.** Mean echo waveform ± 1 standard deviation for sea ice (cluster 0, blue) and leads (cluster 1, orange), computed over all classified echoes.
-
-**Analysis:** Several physically meaningful features emerge from this composite:
+ **Analysis:** Several physically meaningful features emerge from this composite:
 
 1. **Peak power contrast:** The lead mean has substantially higher peak power than the sea-ice mean. This reflects the well-documented difference in backscatter coefficient (σ⁰) between specular leads and diffuse sea ice [3][4]. A calm water surface concentrates energy back toward nadir, dramatically increasing σ⁰ and peak waveform amplitude.
 
@@ -291,26 +280,14 @@ Table 1
 
 5. **Trailing-edge oscillations in the lead mean:** The slight ringing visible in the lead composite arises from between-waveform misalignment — different echoes have slightly different tracker ranges, shifting the peak position by sub-bin amounts. This is addressed by the FFT alignment in Figure 4.
 
----
-
-### Aligned Waveform Means
-
-> **Figure to include here:** `figures/aligned_mean_std_waveforms.png`  
-> Produce by running the FFT-oversampling alignment cells (×24 oversampling, using `RANGE_GATE_RES = 0.2342 m/bin`), then plotting the mean ± std of `waves_aligned` split by `clusters_gmm`. Save with `plt.savefig('figures/aligned_mean_std_waveforms.png', dpi=150, bbox_inches='tight')`.
-
-![Aligned Mean Waveforms](figures/aligned_mean_std_waveforms.png)
-
-**Figure 4.** Mean echo waveform ± 1 standard deviation after sub-bin FFT waveform alignment (×24 oversampling; effective range resolution ≈ 1 cm), for sea ice and leads.
-
-**Analysis:** Alignment produces three notable changes relative to Figure 3:
 
 - The **lead mean sharpens considerably** — the trailing-edge oscillations largely disappear and the peak becomes narrower and better defined, confirming that the ringing in Figure 3 was an instrumental artefact (tracker-range jitter) rather than a physical signal. The resulting template is consistent with the idealised specular-point waveform shape described in altimetry retracking literature.
 - The **lead ±1σ envelope narrows around the peak**, indicating that part of the intra-cluster spread in Figure 3 came from misalignment rather than genuine physical variability in lead returns. The remaining spread reflects true variability in lead properties.
 - The **sea-ice composite changes less dramatically**, as expected: the broad waveform shape is inherently insensitive to sub-bin shifts because its power is distributed across many range bins. The modest tightening of the sea-ice ±1σ confirms that some variability was instrumental.
 
-These aligned composites could serve directly as **waveform endmembers** in a spectral-mixture-type classification approach such as that proposed by Lee et al. (2018) [8].
 
----
+### 4.3 Results
+
 
 ### Confusion Matrix & Classification Accuracy
 
