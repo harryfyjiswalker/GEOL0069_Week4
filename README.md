@@ -95,15 +95,19 @@ $$J(c, \mu) = \sum_{i=1}^{n} \sum_{j=1}^{k} \mathbb{1}\{c_i = j\} \|x_i - \mu_j\
 
 The objective function $J$ depends on two sets of variables: the discrete assignments $c$ and the continuous centroids $\mu$. Since we cannot optimize both simultaneously, we use an **alternating optimization** approach:
 
-1.  **Assignment Step:** Fix $\mu$ and minimize $J$ with respect to $c$ (assign each point to its nearest centroid).
-2.  **Update Step:** Fix $c$ and minimize $J$ with respect to $\mu$ (move each centroid to the mean of its assigned points).
+1.  *Assignment Step:* Fix $\mu$ and minimize $J$ with respect to $c$ (assign each point to its nearest centroid).
+2.  *Update Step:* Fix $c$ and minimize $J$ with respect to $\mu$ (move each centroid to the mean of its assigned points).
 
 This process repeats until the assignments no longer change or a maximum number of iterations is reached.
 
 Advantages:
-- 
+- Requires no prior knowledge of cluster shape
+- Scales efficiently to large datasets
 
-**Why K-Means?** It requires no prior knowledge of cluster shape and scales efficiently to large datasets, making it a natural baseline. Its main limitation here is the assumption of **spherical, equal-variance clusters**
+Drawbacks:
+- *Spherical Assumption:* Because K-means uses the L2 norm to assign points to the nearest centroid, it implicitly assumes that clusters are spherical and have similar diameters. As such, it can be ineffective on datasets featuring non-spherical geometries—such as elongated, elliptical, or manifold shapes—as well as clusters with significantly varying densities or very different sizes.
+- *Hard-clustering:* In K-means, a point belongs entirely to one cluster, even if it is exactly on the border between the two; as such, it forces a binary decision on ambiguous data ponts.
+- *Non-convexity:* The loss surface in K-means in non-convex and therefore prone to lcoal optima, so the final result depends strongly on the initial random mean positions (K-means++ can be used to circumvent this issue by choosing initial centroids that are far apart from each other)
 
 ```python
 from sklearn.cluster import KMeans
