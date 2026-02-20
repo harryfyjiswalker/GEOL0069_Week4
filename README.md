@@ -208,7 +208,7 @@ We first analyse the feature space to evaluate the model's success in separating
 
 
 <p align="center">
-  <img src="/images/ClusteringFeatureSpace.png" width="50%" alt="Sentinel 3 SRAL Diagram">
+  <img src="/images/ClusteringFeatureSpace.png" width="80%" alt="Sentinel 3 SRAL Diagram">
 </p>
 
 sdf
