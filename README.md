@@ -32,18 +32,18 @@
 10. [Acknowledgements](#acknowledgements)
 
 </details>
+
 ## Project Overview
 
-This project applies **unsupervised machine learning** to classify Sentinel-3 SAR altimetry echoes as either **sea ice** or **leads** (narrow channels of open water within sea ice) using only unlabelled waveform-derived features. The GMM-based classifier achieves **~99.6% overall accuracy** against the ESA official L2 surface-type flags, demonstrating that a two-component mixture model applied to just two features (pulse peakiness and stack standard deviation) is sufficient to cleanly separate these physically distinct surface types.
+SAR data are essential for year-round polar monitoring as, unlike optical satellite data, they are unaffected by cloud cover or months of darkness. Elevation can be analysed via the return time of the microwave pulses, while surface discrimination is possible through analysis of the waveform shape. This coursework focuses on automated methods for discrimination of sea-ice and leads (narrow channels of open water within sea ice), approached via application of two unsupervised clustering algorithms - K-means and Gaussian Mixture Models (GMMs) - to waveform-derived features derived from Sentinel-3 SAR altimetry data.
 
-The notebook builds directly on `Chapter1_Unsupervised_Learning_Methods_Michel.ipynb` and extends it with:
-
-- A full altimetry preprocessing pipeline (peakiness, stack standard deviation, NaN removal, flag filtering)
-- Both K-Means and GMM classification with cluster count inspection
-- Mean ± standard deviation waveform envelopes for each class
+The notebook ... builds directly on `Chapter1_Unsupervised_Learning_Methods_Michel.ipynb` and extends it with:
+- Mean echo shapes and standard deviation envelopes for each class
+- Feature space visualisation (pulse peakiness vs stack standard deviation)
 - Sub-bin FFT waveform alignment to remove tracker-range jitter before compositing
-- Quantitative evaluation via a confusion matrix and classification report against ESA ground truth
+- Quantitative evaluation against ESA official L2 surface-type flags using a confusion matrix and classification report
 
+The GMM-based classifier achieves $\sim$99.6\% overall accuracy, demonstrating that a two component mixture model applied to just two features is sufficient to cleanly separate these surface types.
 ---
 
 ## Background & Scientific Context
