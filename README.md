@@ -289,14 +289,11 @@ The tighter standard deviation envelope for sea-ice suggests that, along the sat
 ### 4.3 Results
 
 
-### Confusion Matrix & Classification Accuracy
-
-> **Figure to include here:** `figures/confusion_matrix.png`  
-> Produce by running the `sklearn.metrics.ConfusionMatrixDisplay` cell with `cmap='Blues'`, display labels `['Sea Ice', 'Lead']`, and save with `plt.savefig('figures/confusion_matrix.png', dpi=150, bbox_inches='tight')`.
-
-![Confusion Matrix](figures/confusion_matrix.png)
-
-**Figure 5.** Confusion matrix comparing GMM cluster labels against ESA official L2 surface-type flags for all 12,195 classified waveforms. Rows = ESA ground truth; columns = GMM prediction.
+<p align="center">
+  <img src="/images/ConfusionMatrix.png" width="70%" alt="Sentinel 3 SRAL Diagram">
+  <br>
+  <em>Figure 7: onfusion matrix comparing GMM cluster labels against ESA official L2 surface-type flags for all 12,195 classified waveforms. Rows = ESA ground truth; columns = GMM prediction..</em>
+</p>
 
 **Raw counts:**
 
@@ -312,7 +309,6 @@ True: Lead               24          3293
 |-------|-----------|--------|----------|---------|
 | Sea Ice (0) | 1.00 | 1.00 | 1.00 | 8,878 |
 | Lead (1) | 0.99 | 0.99 | 0.99 | 3,317 |
-| **Overall accuracy** | | | **~99.6%** | **12,195** |
 
 **Analysis:** With only 46 misclassifications out of 12,195 observations, the GMM achieves near-perfect agreement with the ESA operational product. Several interpretive points are important:
 
