@@ -172,9 +172,7 @@ plt.show()
 
 ## Data & Preprocessing
 
-To transform the data into meaningful information for the classification model, Pulse Peakiness and Stack Standard Deviation are extracted from the raw Sentinel-3 data.
-
-**Satellite data:** Sentinel-3B SRAL Level-2 SAR product:
+To transform the data into meaningful information for the classification model, Pulse Peakiness and Stack Standard Deviation are extracted from raw Sentinel-3 data:
 ```
 S3B_SR_2_LAN_SI_20190301T231304_20190301T233006_20230405T162425_1021_022_301______LN3_R_NT_005.SEN3
 ```
@@ -206,6 +204,20 @@ Two-component GMM is selected over K-means for clustering here given its previou
 ## Results & Analysis
 
 ### Feature Space Visualisation
+
+We first analyse the feature space to evaluate the model's success in separating the two classes, plotting $\sigma_0$ (dB), the backscatter coefficient (a measure of how strongly the surface reflects the radar pulse back towards the satellite) against both PP and SSD, as well as PP against SSD to asses how well the two clusters separate in the classification feature space itself.[9] We observe strong separation following intuitive patterns: the sea-ice cluster cluster occupies the low-peakiness, weak-backscatter, high-SSD regions, reflecting the more diffuse, multi-angular return expected from a rough ice surface compared to the smooth leads.
+
+
+
+
+
+
+
+
+The selongated, non-spherical cluster shapes further justify the choice of GMM.
+
+
+
 
 > **Figure to include here:** `figures/feature_space_scatter.png`  
 > Produce by running the scatter plot cell that plots **pulse peakiness** (x-axis) vs **stack standard deviation** (y-axis), colour-coded by GMM cluster label (0 = sea ice, 1 = lead). Save with `plt.savefig('figures/feature_space_scatter.png', dpi=150, bbox_inches='tight')`.
@@ -387,6 +399,8 @@ GEOL0069-Week4/
 [7] Reynolds, D.A. (2009). Gaussian Mixture Models. In *Encyclopedia of Biometrics*. Springer, Boston, MA. https://doi.org/10.1007/978-0-387-73003-5_196
 
 [8] Lee, S., Im, J., Kim, J., Kim, M., Shin, M., Kim, H.-C., and Quackenbush, L.J. (2018). Arctic lead detection using a waveform mixture algorithm from CryoSat-2 data. *The Cryosphere*, 12, 1665–1679. https://doi.org/10.5194/tc-12-1665-2018
+
+[9] https://elisecolin.medium.com/what-are-the-physical-quantities-in-a-sar-image-c788a8265abd
 
 ---
 
