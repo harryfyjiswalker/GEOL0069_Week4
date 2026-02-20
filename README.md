@@ -8,7 +8,7 @@
 ---
 
 <details>
-<summary><b>Click to expand Table of Contents</b></summary>
+<summary><b>Table of Contents</b></summary>
 
 ## Table of Contents
 
