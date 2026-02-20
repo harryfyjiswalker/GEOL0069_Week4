@@ -57,7 +57,7 @@ SAR (SAR) measures the backscatter of microwave pulses to detect surface feature
 - SAR altimeters address this by recording many pulses in quick succession as the satellite moves along its orbit, then combining them (using coherent multi-look processing using Doppler techniques) to isolate the return from a much smaller strip of ground - around 300m - directly beneath the satellite.[3][4]
 
 <p align="center">
-  <img src="/images/Sentinel_3_SRAL_Diagram.png" width="50%" alt="Sentinel 3 SRAL Diagram>
+  <img src="/images/Sentinel_3_SRAL_Diagram.png" width="50%" alt="Sentinel 3 SRAL Diagram">
   <br>
   <em>Figure 1: Diagram of SRAL nadir track (the ground track directly beneath the satellite), as well as the ground tracks of the other Sentinel-3 instruments.[3].</em>
 
