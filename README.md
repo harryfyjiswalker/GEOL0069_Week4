@@ -60,7 +60,9 @@ SAR (SAR) measures the backscatter of microwave pulses to detect surface feature
   <img src="/images/Sentinel_3_SRAL_Diagram.png" width="50%" alt="Sentinel 3 SRAL Diagram>
   <br>
   <em>Figure 1: Diagram of SRAL nadir track (the ground track directly beneath the satellite), as well as the ground tracks of the other Sentinel-3 instruments.[3].</em>
+
 </p>
+
 
 The returned waveform encodes information about both:
 - Surface elevation, from the timing of the waveform's *leading edge* (the point where the returned signal strength first rises sharply i.e. the moment the pulse reaches the surface). 
