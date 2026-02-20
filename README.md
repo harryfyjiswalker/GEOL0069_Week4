@@ -49,15 +49,8 @@ The GMM-based classifier achieves an overall accuracy of approximately 99.6%, de
 
 ## Background
 
-###SAR Radar Altimeter
+### Artic Leads
 
-Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to detect surface features. Unlike optical satellite data, the approach is unaffected by cloud cover or months of darkness, making it invaluable for day- and year-round monitoring. SAR altimetry, obtained 
-
-
-The data generally falls into two categories: SAR imaging, which provides a 2D map of the surface backscatter, and 
-
-
-Elevation can be analysed via the return time of the microwave pulses, while surface discrimination is possible through analysis of the waveform shape.  The **Sentinel-3 satellites** (ESA/Copernicus) carry the SAR Radar Altimeter (SRAL), which transmits Ku-band (13.575 GHz) radar pulses toward the Earth's surface and records the backscattered power as a function of time — the *echo waveform* [1]. The mission was designed to measure sea-surface topography, sea-ice thickness, and land-ice elevation on a global operational basis [2].
 
 Over the polar oceans, distinguishing **sea ice** from **leads** is a critical preprocessing step before any freeboard or sea-ice thickness retrieval. The ESA operational product itself uses waveform peakiness thresholds to perform this classification [1].
 
@@ -67,6 +60,18 @@ Over the polar oceans, distinguishing **sea ice** from **leads** is a critical p
 This physical contrast means both surface types occupy well-separated regions in waveform-feature space, which the unsupervised methods in this project exploit — without any labelled training examples.
 
 Beyond their role in altimetry processing, leads are geophysically important in their own right. They represent the dominant pathway for turbulent heat and moisture exchange between the Arctic Ocean and atmosphere, and their spatial distribution governs sea-ice production and brine rejection [3]. Understanding lead occurrence is relevant to polar climate modelling and sea-ice mass balance estimates.
+
+### SAR Radar Altimeter
+
+Synthetic Aperture Radar (SAR) measures the backscatter of microwave pulses to detect surface features. Unlike optical satellite data, the approach is unaffected by cloud cover or months of darkness, making it invaluable for day- and year-round monitoring. SAR altimetry, obtained via specialised instruments such as the SAR Radar Altimeter (SRAL) on board Sentinel-3
+
+
+The data generally falls into two categories: SAR imaging, which provides a 2D map of the surface backscatter, and 
+
+- Pulse peakiness
+
+Elevation can be analysed via the return time of the microwave pulses, while surface discrimination is possible through analysis of the waveform shape.  The **Sentinel-3 satellites** (ESA/Copernicus) carry the SAR Radar Altimeter (SRAL), which transmits Ku-band (13.575 GHz) radar pulses toward the Earth's surface and records the backscattered power as a function of time — the *echo waveform* [1]. The mission was designed to measure sea-surface topography, sea-ice thickness, and land-ice elevation on a global operational basis [2].
+
 
 ---
 
