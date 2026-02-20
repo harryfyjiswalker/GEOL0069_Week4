@@ -382,7 +382,7 @@ Marine Geodesy, 45(5), 462-495. https://doi.org/10.1080/01490419.2022.2089412
 
 **Harry Fyjis-Walker** – harryfyjiswalker@gmail.com 
 
-Project Link: `https://github.com/YOUR_USERNAME/GEOL0069-Week4`
+Project Link: `https://github.com/harryfyjiswalker/GEOL0069-Week4`
 
 ---
 
