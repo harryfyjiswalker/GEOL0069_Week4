@@ -10,32 +10,31 @@
 
 ## Table of Contents
 
-1. [Project Overview](#project-overview)
-2. [Background & Scientific Context](#background--scientific-context)
-3. [Data & Preprocessing](#data--preprocessing)
-4. [Methods](#methods)
-   - [Feature Space](#feature-space)
-   - [K-Means Clustering](#1-k-means-clustering)
-   - [Gaussian Mixture Models (GMM)](#2-gaussian-mixture-models-gmm)
-5. [Results & Analysis](#results--analysis)
-   - [Feature Space Visualisation](#feature-space-visualisation)
-   - [Individual Echo Waveforms](#individual-echo-waveforms)
-   - [Mean Echo Shapes & Standard Deviation Envelopes](#mean-echo-shapes--standard-deviation-envelopes)
-   - [Aligned Waveform Means](#aligned-waveform-means)
-   - [Confusion Matrix & Classification Accuracy](#confusion-matrix--classification-accuracy)
-6. [Getting Started](#getting-started)
-7. [Repository Structure](#repository-structure)
-8. [References](#references)
-9. [Contact](#contact)
-10. [Acknowledgements](#acknowledgements)
+1. [Project Overview](#1-project-overview)
+2. [Background & Scientific Context](#2-background)
+   - [Arctic Leads](#21-arctic-leads)
+   - [SAR Radar Altimeter](#22-sar-radar-altimeter)
+   - [Clustering Algorithms](#23-clustering-algorithms)
+3. [Methods](#3-methods)
+   - [Data & Preprocessing](#31-data--preprocessing)
+   - [Gaussian Mixture Models (GMM)](#32-gaussian-mixture-models-gmm)
+4. [Discussion and Results](#4-discussion-and-results)
+   - [Feature Space Analysis](#41-feature-space-analysis)
+   - [Echo Waveform Analysis](#42-echo-waveform-analysis)
+   - [Results](#43-results)
+5. [Getting Started](#getting-started)
+6. [Repository Structure](#repository-structure)
+7. [References](#references)
+8. [Contact](#contact)
+9. [Acknowledgements](#acknowledgements)
 
 </details>
 
 ## 1. Project Overview
 
-This assignment focuses on evaluation of automated methods for discrimination of sea-ice and leads. A Gaussian Mixture Models (GMMs) is trained on waveform features derived from unlabelled Sentinel-3 SAR altimetry data, and their classification performances validated against ESA surface-type flags.
+This assignment focuses on evaluation of automated methods for discrimination of sea-ice and leads. A Gaussian Mixture Model (GMM) is trained on waveform features derived from unlabelled Sentinel-3 SAR altimetry data, and their classification performances validated against ESA surface-type flags.
 
-The notebook ... builds directly on `Chapter1_Unsupervised_Learning_Methods_Michel.ipynb` and involves:
+The notebook `GEOL0069_Week4_Assignment.ipynb` builds directly on `Chapter1_Unsupervised_Learning_Methods_Michel.ipynb` and involves:
 - Mean waveform shapes and standard deviation envelopes for each class
 - Feature space visualisation (pulse peakiness vs stack standard deviation)
 - Comparison of cross-correlation and orbit geometry-based waveform alignment, followed by revisualisation of mean waveform shapes and standard deviations 
@@ -58,10 +57,10 @@ SAR (SAR) measures the backscatter of microwave pulses to detect surface feature
 - SAR altimeters address this by recording many pulses in quick succession as the satellite moves along its orbit, then combining them (using coherent multi-look processing using Doppler techniques) to isolate the return from a much smaller strip of ground - around 300m - directly beneath the satellite.[3][4]
 
 <p align="center">
-  <img src="/images/Sentinel_3_SRAL_Diagram.png" width="50%" alt="Sentinel 3 SRAL Diagram">
+  <img src="/images/Sentinel_3_SRAL_Diagram.png" width="50%" alt="Sentinel 3 SRAL Diagram>
+  <br>
+  <em>Figure 1: Diagram of SRAL nadir track (the ground track directly beneath the satellite), as well as the ground tracks of the other Sentinel-3 instruments.[3].</em>
 </p>
-
-*Figure 1. Diagram of SRAL nadir track (the ground track directly beneath the satellite), as well as the ground tracks of the other Sentinel-3 instruments.[3]*
 
 The returned waveform encodes information about both:
 - Surface elevation, from the timing of the waveform's *leading edge* (the point where the returned signal strength first rises sharply i.e. the moment the pulse reaches the surface). 
