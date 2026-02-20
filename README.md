@@ -105,7 +105,7 @@ Drawbacks:
 - *Spherical Assumption:* Because K-means uses the L2 norm to assign points to the nearest centroid, it implicitly assumes that clusters are spherical and have similar diameters. As such, it can be ineffective on datasets featuring non-spherical geometries—such as elongated, elliptical, or manifold shapes—as well as clusters with significantly varying densities or very different sizes.
 - *Hard-clustering:* In K-means, a point belongs entirely to one cluster, even if it is exactly on the border between the two; as such, it forces a binary decision on ambiguous data ponts.
 - *Non-convexity:* The loss surface in K-means in non-convex and therefore prone to lcoal optima, so the final result depends strongly on the initial random mean positions (K-means++ can be used to circumvent this issue by choosing initial centroids that are far apart from each other)
-- k (number of clusters) must be chosen manually [9]
+- k (number of clusters) must be chosen manually.[9]
 
 An example implementation is shown below.
 
@@ -141,7 +141,7 @@ A GMM models the data as a weighted sum of *K* multivariate Gaussian distributio
 
 These have advantages over k-means due to:
 - Flexibility in cluster shapes: GMM allows each cluster to have a different covariance structure
-- Probabilistic assignment: GMMs outputs a *soft* classification (probability of class membership), which represents ambiguous data points more completely[12]
+- Probabilistic assignment: GMMs outputs a *soft* classification (probability of class membership), which represents ambiguous data points more completely.[12]
 
 Again, below is an example implementation.
 
